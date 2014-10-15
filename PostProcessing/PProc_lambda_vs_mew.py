@@ -14,12 +14,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-basefile_name = 'INPUT1'
-basefile_obj = open(basefile_name + '.dpj', 'r')
-del basefile_obj
+basefile_name = 'C:/JELLE/SIMULATIES/ INPUT1'
+basefile_name2 = 'C:/JELLE/SIMULATIES/INPUT1'
 
 
-N = 6 # define the number of variation steps
+
+N = 100 # define the number of variation step
 
 # open file for result
 
@@ -47,8 +47,8 @@ for i in range(N+1):
 
 # construct DataFrame with a) lambda b) MEW c) Max_mc
 
-overview = pd.read_csv(basefile_name + '_variation.txt',sep='\s+')
-overview['MC_max']=results[0:N]
+overview = pd.read_csv(basefile_name2 + '_variation.txt',sep='\s+')
+overview['MC_max']=results
 
 overview['_60']=overview['MC_max']<60
 overview['_65']=((overview['MC_max']>=60) & (overview['MC_max']<65))
@@ -83,16 +83,6 @@ area = np.ones(N)*60
 
 plt.scatter(x, y, s=area, c=overview['MC_max'], alpha=0.7, linewidths=0)
 plt.colorbar()
-
 plt.show()
 
 
-plt.scatter
-
-plt.plot(overview['MEW'][overview['_60']],overview['LAMBDA'][overview['_60']],'o')
-plt.plot(overview['MEW'][overview['_65']],overview['LAMBDA'][overview['_65']],'o')
-plt.plot(overview['MEW'][overview['_70']],overview['LAMBDA'][overview['_70']],'o')
-plt.plot(overview['MEW'][overview['_75']],overview['LAMBDA'][overview['_75']],'o')
-plt.plot(overview['MEW'][overview['_80']],overview['LAMBDA'][overview['_80']],'o')
-
-plt.show()
