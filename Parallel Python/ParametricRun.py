@@ -11,7 +11,7 @@ import sys
 
 sys.path.append(r'C:\JELLE\SIMULATIES')
 
-import pymosim
+import pymosim       #TO DO, er voor zorgen dat deze pymosim niet in map met simuaties moet zitten
 
 work_dir = r'C:\JELLE\SIMULATIES'
 os.chdir(work_dir)
