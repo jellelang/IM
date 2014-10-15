@@ -64,7 +64,7 @@ N=100
 
 ###############################################################################
 #  2  AANMAKEN VAN DE FILES
-basefile_name = 'INPUT2'
+basefile_name = 'C:/JELLE/SIMULATIES/INPUT2'
 basefile_obj = open(basefile_name + '.dpj', 'r')
 basefile = basefile_obj.readlines()
 del basefile_obj
@@ -91,8 +91,7 @@ resultfile_obj.write('file \t MEW\t LAMBDA \n')
 n=0
 for i in range(N+1):
     # compose new filename
-    k=i+101
-    filename = basefile_name + '_%02d' % k
+    filename = basefile_name + '_%02d' % i
     basefile[output_line] = ' OUTPUT_FOLDER= $(PROJECT_DIR)\ ' + filename + '.results\n'
 
     # Modifiying material properties

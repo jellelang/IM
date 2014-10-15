@@ -28,12 +28,12 @@ os.chdir(work_dir)
 # now we set everything ready for parallel python, the return consistst of a 
 # list of cd-paths where all sub-sets are located as for parallel python
 sub_dir = []
-for i in range(101):
-    sub_dir.append('INPUT1_%02d' %i)
+for i in range(100):
+    sub_dir.append('INPUT2_%02d' %i)
 
 # initialise parallel python
 ppservers=()
-job_server = pp.Server(ppservers = ppservers, ncpus=8)
+job_server = pp.Server(ppservers = ppservers, ncpus=7)
 # define the inputs and start the simulations
 inputs = tuple(sub_dir)
 jobs = [(input, job_server.submit(pymosim.start_parametric_run, args = (input,), modules = ("subprocess","os"))) for input in inputs]
