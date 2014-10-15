@@ -1,0 +1,27 @@
+
+
+
+import os
+import shutil
+
+
+#-------------------in te vullen-----------------------------------------------
+old_folder = r'C:\PostDoc\Python\Allerlei_tests\DELPHIN\SIMULATIES'
+basefile='\INPUT2'
+N=100
+
+
+
+for i in range(N+1):       
+        # open and read output file
+        source1 = old_folder + basefile + '_%02d' % i + '.dpj.cvode_monitors'
+        source2 = old_folder + basefile + '_%02d' % i + '.dpj.output'
+        
+        
+        dest1 = old_folder + basefile + '_%02d' % i + '.results'  + basefile + '_%02d' % i + '.dpj.cvode_monitors'       
+        dest2 = old_folder + basefile + '_%02d' % i + '.results'  + basefile + '_%02d' % i + '.dpj.output'       
+
+        shutil.move(source1,dest1)        
+        shutil.move(source2,dest2)
+        
+       
