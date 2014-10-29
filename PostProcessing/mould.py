@@ -26,6 +26,10 @@ def mould(T,RH):
      
     for i in range(len(RH))[1:len(RH)]:     
             
+            if i==748:
+                test=1            
+            
+            
             if T[i]<=20:
                 RHcrit=-0.00267*T[i]**3+0.16*T[i]**2-3.13*T[i]+100
             else:
@@ -58,7 +62,7 @@ def mould(T,RH):
                     if unfav[i-j]==0:
                         break
                     
-                if 1<=tunfav & tunfav<=5:
+                if 1<=tunfav & tunfav<=6:
                     deltaM=-0.032*dt
                 if 6<tunfav & tunfav<=23:
                     deltaM=0

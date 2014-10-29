@@ -28,8 +28,9 @@ os.chdir(work_dir)
 # now we set everything ready for parallel python, the return consistst of a 
 # list of cd-paths where all sub-sets are located as for parallel python
 sub_dir = []
-for i in range(101):
-    sub_dir.append('INPUT2_%02d' %i)
+#restart=range(101)
+for i in range(36):
+    sub_dir.append('INPUT4_%02d' %i)
 
 # initialise parallel python
 ppservers=()

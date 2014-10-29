@@ -14,12 +14,21 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-basefile_name = 'C:/JELLE/SIMULATIES/ INPUT1'
-basefile_name2 = 'C:/JELLE/SIMULATIES/INPUT1'
+import matplotlib
+import matplotlib.cm as cm
+import matplotlib.mlab as mlab
+import scipy.ndimage
+import mould
 
 
 
-N = 100 # define the number of variation step
+
+basefile_name = 'C:/JELLE/SIMULATIES/ INPUT5' #opletten met spatie (vorige keer weggelaten omdat ik files manueel heb aangepast voor reeks 3)
+basefile_name2 = 'C:/JELLE/SIMULATIES/INPUT5'
+
+
+
+N = 107 # define the number of variation step
 
 # open file for result
 
@@ -33,6 +42,8 @@ N = 100 # define the number of variation step
 # interface between exterior panel and insulation 
 
 results=[]
+results_cond=[]
+M_max=[]
 for i in range(N+1):       
         # open and read output file
         filename = basefile_name + '_%02d' % i
@@ -44,45 +55,104 @@ for i in range(N+1):
         data.columns=['TIJD', 'MC']  
         data.MC.max()
         results.append(data.MC.max())
+        
+        output_filename_max = folder + '/cavity.out' 
+        condens=pd.read_csv(output_filename_max,skiprows=range(13), header=None,sep='\s+')
+        results_cond.append(condens[1].max()) #[4]  range(8890)
 
+        output_filename_RH = folder + '/RH1.out' 
+        RH=pd.read_csv(output_filename_RH,skiprows=range(13), header=None,sep='\s+')
+        output_filename_T = folder + '/T1.out' 
+        T=pd.read_csv(output_filename_T,skiprows=range(13), header=None,sep='\s+')
+
+        T=np.array(T[1])
+        RH=np.array(RH[1])
+        M=mould.mould(T,RH)
+        M_max.append(M.max())
+        
+        
+
+        
 # construct DataFrame with a) lambda b) MEW c) Max_mc
 
 overview = pd.read_csv(basefile_name2 + '_variation.txt',sep='\s+')
+overview = overview[0:N+1]
 overview['MC_max']=results
 
-overview['_60']=overview['MC_max']<60
-overview['_65']=((overview['MC_max']>=60) & (overview['MC_max']<65))
-overview['_70']=((overview['MC_max']>=65) & (overview['MC_max']<70))
-overview['_75']=((overview['MC_max']>=70) & (overview['MC_max']<75))
-overview['_80']=((overview['MC_max']>=75) & (overview['MC_max']<80))
-overview['_81']=overview['MC_max']>80
-
-colors=[]
-for i in overview['MC_max']:
-    if i<60:
-        colors.append(0.1)
-    if (i>=60) & (i<65):
-        colors.append(0.2)
-    if (i>=65) & (i<70):
-        colors.append(0.4)
-    if (i>=70) & (i<75):
-        colors.append(0.6)   
-    if (i>=75) & (i<80):
-        colors.append(0.8)
-    if i>=80:
-        colors.append(0.9)
         
-        
-        
-        
-
 x = overview['MEW']
 y = overview['LAMBDA']
+c=results_cond    #overview['MC_max']
+mold=M_max
+mc=overview['MC_max']
+
+
 #colors = np.random.rand(N)
 area = np.ones(N)*60  
+#plt.scatter(x, y, s=area, c, alpha=0.7, linewidths=0)
+#plt.colorbar()
+#plt.show()
 
-plt.scatter(x, y, s=area, c=overview['MC_max'], alpha=0.7, linewidths=0)
-plt.colorbar()
+
+# iet met contour plot maken
+x_un=x.unique()
+y_un=y.unique()
+X, Y = np.meshgrid(x_un, y_un)
+c_un=np.array(c)*3/1000
+m_un=np.array(mold)
+mc_un=np.array(mc)
+
+
+C=c_un.reshape(len(y_un),len(x_un),order='F')
+M=m_un.reshape(len(y_un),len(x_un),order='F')
+MC=mc_un.reshape(len(y_un),len(x_un),order='F')
+
+
+
+#CONDENSATIE
+
+plt.figure()
+CS = plt.contourf(X, Y, C)
+plt.title('Maximum condensation (l/m^2)')
+axes = plt.gca()
+axes.set_xlim([0,120])
+plt.xlabel('MEW (-)')
+plt.ylabel('LAMBDA (W/m^2K)')
+colorbar(CS)
 plt.show()
+
+
+#MOULD GROWTH
+
+plt.figure()
+CS = plt.contourf(X, Y, M)
+plt.title('MOULD INDEX (-)')
+axes = plt.gca()
+axes.set_xlim([0,20])
+plt.xlabel('MEW (-)')
+plt.ylabel('LAMBDA (W/m^2K)')
+colorbar(CS)
+plt.show()
+
+
+#VOCHTINHOUD
+
+plt.figure()
+CS = plt.contourf(X, Y, MC)
+plt.title('Moisture content (kg/m^3)')
+axes = plt.gca()
+axes.set_xlim([0,120])
+plt.xlabel('MEW (-)')
+plt.ylabel('LAMBDA (W/m^2K)')
+colorbar(CS)
+plt.show()
+
+
+
+
+
+
+
+
 
 
