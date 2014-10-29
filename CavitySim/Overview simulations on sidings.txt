@@ -1,0 +1,26 @@
+(simulaties gebeuren op deze directory)
+C:\PostDoc\SIMULATIES\IMPACT CLADDING\SIDINGS VLIET\VLIET
+
+Vergelijking van simulatie met VLIET
+
+01/02 tot 07/02 koude periode zon
+07/02 tot 14/02 koude periode geen zon
+8/06 tot 15/06  warme periode zon
+24/05 tot 31/05 warme periode weinig zon
+
+Deze periodes vergelijken voor zowel NE als SW
+
+
+SW
+
+abs. coef. kort golf: 
+0.6 
+zon1 0.3 
+zon2 0.2
+zon3 0.25
+
+
+Mooi grafieken maken voor in de presentatie komt er op neer dat je a=0.3-0.2 moet nemen. Beste correlatie coef.
+
+Sidings_meas_vs_sim_SW
+Sidings_meas_vs_sim_NE
