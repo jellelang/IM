@@ -24,9 +24,22 @@ from definities import give_random
 # import the module for calling external programs (creating subprocesses)
 import subprocess
 
-# variatie in grid (snelle versie nog verbeteren, integreren in geheel)
+
+###############################################################################
+# TO DO 
+###############################################################################
+# 1) variatie in grid (snelle versie nog verbeteren, integreren in geheel)
+###############################################################################
+
+
+
 ###############################################################################
 # 1  INPUT VAN DE GEBRUIKER
+
+# BASEFILE
+basefile_name = 'C:/PostDoc/SIMULATIES/TESTPARAMETRIC/INPUT1'  #zonder extensie geven
+basefile_name_rel = 'INPUT1'
+
 
 # VARIANTIONS/UNCERTAINTIES IN MATERIAL PROPERTIES
 # CELIT
@@ -55,7 +68,7 @@ data=[[Celit_name,MW_name],[Celit_VAR,MW_VAR],[Celit_MEW,MW_MEW],[Celit_LAMBDA,M
 Materials = DataFrame(data, columns=materials,index=properties)
 
 # aantal files dat er gemaakt moeten worden
-N=100
+N=10
 ###############################################################################
 
 
@@ -64,8 +77,6 @@ N=100
 
 ###############################################################################
 #  2  AANMAKEN VAN DE FILES
-basefile_name = 'C:/JELLE/SIMULATIES/INPUT5'
-basefile_name_rel = 'INPUT5'
 
 basefile_obj = open(basefile_name + '.dpj', 'r')
 basefile = basefile_obj.readlines()
@@ -121,6 +132,10 @@ for i in range(len(MEW_value)):
         resultfile_obj.write('%g\t %g\t %g\t \n' %(n, mew_n,lambda_n))
         resultfile_obj.flush()
 del resultfile_obj
+
+
+
+
 
 
 ###############################################################################

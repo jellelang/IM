@@ -28,6 +28,7 @@ def material_lines(Material_in,basefile):
             break
     if ok:
         print('ERROR!!!  %s not found' % Material_in)  
+        
 # Look for line Lambda
     line_LAMBDA=line_material-1
     for i in basefile[line_material:] :       
@@ -35,7 +36,7 @@ def material_lines(Material_in,basefile):
         if i[:12] == '      LAMBDA':
             break
         if (i == '  [MATERIAL]\n') | (i =='[CONDITIONS]\n'):
-            print('ERROR !!! LAMBDA of %s not found' %Material_in)        
+            print('ERROR !!! LAMBDA of %s not found' %Material_in)          
             break
 # Look for line MEW
     line_MEW=line_material-1
@@ -75,7 +76,8 @@ def outputfolder_lines(basefile):
 def give_random(dictionary):  
     if dictionary['dist']=='uniform':
         new_value = random.uniform(dictionary['min'],dictionary['max'])     
-    #if dictionary['dist']=='normal':   
+    if dictionary['dist']=='normal':   
+        new_value = random.normal(dictionary['mhu'], dictionary['sigma'])
     return new_value
 
     

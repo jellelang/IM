@@ -24,28 +24,42 @@ from definities import give_random
 # import the module for calling external programs (creating subprocesses)
 import subprocess
 
+###############################################################################
+# TO DO 
+###############################################################################
+# 1) variatie in grid (snelle versie nog verbeteren, integreren in geheel)
+###############################################################################
+
+
 
 ###############################################################################
 # 1  INPUT VAN DE GEBRUIKER
 
+# BASEFILE
+basefile_name = 'C:/PostDoc/SIMULATIES/TESTPARAMETRIC/INPUT1'  #zonder extensie geven
+basefile_name_rel = 'INPUT1'
+
 # VARIANTIONS/UNCERTAINTIES IN MATERIAL PROPERTIES
+
+# uniform (min,max)
+# normal  (mhu,sigma)
+# distrete (TO DO)
+
 # CELIT
 Celit_name='Celit'
-Celit_VAR=True
-Celit_MEW={'min':3,'max':100,'dist':'uniform','var':True}
-Celit_LAMBDA={'min':0.05,'max':0.5,'dist':'uniform','var':True}
-Celit_KG={'min':7.2e-8,'max':7.2e-6,'dist':'uniform','var':False}
+Celit_MEW={'min':3,'max':100,'dist':'uniform','var':True}            
+Celit_LAMBDA={'min':0.05,'max':0.5,'dist':'uniform','var':True}      
+Celit_KG={'min':7.2e-8,'max':7.2e-6,'dist':'uniform','var':False}    
 # MINERAL WOOL
 MW_name='MINERALE WOL 20'
-MW_VAR=False
-MW_MEW={'min':3,'max':100,'verdeling':'dist','var':False}
-MW_LAMBDA={'min':0.05,'max':0.5,'dist':'uniform','var':False}
-MW_KG={'min':7.2e-8,'max':7.2e-6,'dist':'uniform','var':False}
+MW_MEW={'min':3,'max':100,'dist':'uniform','var':True}               
+MW_LAMBDA={'min':0.05,'max':0.5,'dist':'uniform','var':True}         
+MW_KG={'mhu':0.1,'sigma':0.005,'dist':'normal','var':True}        
 
 materials=['one','two']
-properties=['NAME','VAR','MEW', 'LAMBDA', 'KG']
+properties=['NAME','MEW', 'LAMBDA', 'KG']
 
-data=[[Celit_name,MW_name],[Celit_VAR,MW_VAR],[Celit_MEW,MW_MEW],[Celit_LAMBDA,MW_LAMBDA],[Celit_KG,MW_KG]]
+data=[[Celit_name,MW_name],[Celit_MEW,MW_MEW],[Celit_LAMBDA,MW_LAMBDA],[Celit_KG,MW_KG]]
 
 # Dataframe with all material properties 
     # example to extract: Materials.one['NAME']           by order in Dataframe
@@ -55,8 +69,14 @@ data=[[Celit_name,MW_name],[Celit_VAR,MW_VAR],[Celit_MEW,MW_MEW],[Celit_LAMBDA,M
 Materials = DataFrame(data, columns=materials,index=properties)
 
 # aantal files dat er gemaakt moeten worden
-N=100
+N=10
 ###############################################################################
+
+
+
+
+
+
 
 
 
@@ -64,8 +84,6 @@ N=100
 
 ###############################################################################
 #  2  AANMAKEN VAN DE FILES
-basefile_name = 'C:/JELLE/SIMULATIES/INPUT2'
-basefile_name_rel = 'INPUT2'
 
 basefile_obj = open(basefile_name + '.dpj', 'r')
 basefile = basefile_obj.readlines()
@@ -88,9 +106,24 @@ output_line=outputfolder_lines(basefile)
 
 # Make file to keep track of all changes
 resultfile_obj = open(basefile_name + '_variation.txt', 'w')
-resultfile_obj.write('file \t MEW\t LAMBDA \n') 
+# Schrijf vooropgestelde wijzigen weg
+Materials.to_csv(resultfile_obj)
+resultfile_obj.write('\n\n')
+
+# maak header om de veranderingen op te slaan
+parameters=Materials.index.values[1:]
+resultfile_obj.write('%s\t' %('#'))
+for i in Materials.columns:
+    naam=Materials[i]['NAME']
+    for j in range(len(parameters)):
+        resultfile_obj.write('%s_%s\t' %(parameters[j],naam) )
+resultfile_obj.write('\n') 
 
 
+#neem aantal kolommen
+changes=pd.DataFrame(range(len(Materials.columns)))
+
+Changes=Materials.copy(deep=True)
 
 
 n=0
@@ -101,25 +134,39 @@ for i in range(N+1):
 
     basefile[output_line] = ' OUTPUT_FOLDER= $(PROJECT_DIR)\ ' + filename_rel + '.results\n'
 
+    n=n+1
+    resultfile_obj.write('%g\t' %(n))
+ 
     # Modifiying material properties
-    for j in Materials:
+    for j in Materials.columns.values:
         if  Materials[j]['MEW']['var']==True:   
             mew_n=give_random(Materials[j]['MEW'])
             basefile[mat_lines[Materials[j]['NAME']]['MEW']] = '      MEW                   = %g -\n' % mew_n
+            Changes[j]['MEW']=mew_n
+        else:
+            Changes[j]['MEW']=mew_n=float('nan')
         if  Materials[j]['LAMBDA']['var']==True:
             lambda_n=give_random(Materials[j]['LAMBDA'])
             basefile[mat_lines[Materials[j]['NAME']]['LAMBDA']] = '      LAMBDA                   = %g W/mK\n' % lambda_n
+            Changes[j]['LAMBDA']=lambda_n
+        else:
+            Changes[j]['LAMBDA']=float('nan')        
         if  Materials[j]['KG']['var']==True:         
             kg_n=give_random(Materials[j]['KG'])
             basefile[mat_lines[Materials[j]['NAME']]['KG']] = '      KG                   = %g W/mK\n' % kg_n
+            Changes[j]['KG']=kg_n
+        else:
+            Changes[j]['KG']=float('nan') 
+        for i in parameters:
+            resultfile_obj.write('%g\t' %(Changes[j][i]) )
+    
+    resultfile_obj.write('\n')
+    resultfile_obj.flush()
     print 'Creating: ' + filename
     # open and write file
     fileobj = open(filename + '.dpj', 'w')
     fileobj.writelines(basefile)
     del fileobj
-    n=n+1
-    resultfile_obj.write('%g\t %g\t %g\t \n' %(n, mew_n,lambda_n))
-    resultfile_obj.flush()
 del resultfile_obj
 
 

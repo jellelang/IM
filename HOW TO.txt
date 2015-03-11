@@ -1,0 +1,15 @@
+
+
+
+$ cd c:/postdoc/python/IM (naar juiste directory gaan)
+
+
+$ git status  (status checken)
+
+git add * (alle nieuwe dingen toevoegen)
+git commit -m "commentaar toevoegen aan actie)
+git push origin master (uploaden)
+
+git pull (downloaden van updates)
+
+       
