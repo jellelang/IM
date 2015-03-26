@@ -23,9 +23,12 @@ from definities import *
 import sys,os
 path='C:/PostDoc/Python/IM/BASICS'
 sys.path.append(path)
+path='C:/PostDoc/Python/IM/Boundary_conditions'
+sys.path.append(path)
 #from path import *
 from physics import *
 from Pvi_HIR import *
+import climates
 # import the module for calling external programs (creating subprocesses)
 import subprocess
 
@@ -33,33 +36,34 @@ import subprocess
 # TO DO & notes
 ###############################################################################
 # 1) opletten dat lijnen niet veranderen ondertussen: zorg ervoor dat elke aan-
-# in de file tot hetzelfde aantal lijnen resulteert
-# 2) nog bekijken hoe ik grid beter kan aanpassen
+# 2) in de file tot hetzelfde aantal lijnen resulteert
 ###############################################################################
 
 
 
 ###############################################################################
 # 1  INPUT VAN DE GEBRUIKER
+###############################################################################
 
-# BASEFILE & alternatieve grids
+#BASEFILE 
 base_dir = 'C:/PostDoc/SIMULATIES/TESTPARAMETRIC' 
 basefile_name = 'C:/PostDoc/SIMULATIES/TESTPARAMETRIC/INPUT1' 
 basefile_name_rel = 'INPUT1'
-grid={'var':True,'names':['grid1','grid2','grid3']}
-indoor_pv={'var':False,'n':0.5,'V':50,'HIR':1.5/1000,'moistprod':[0.12,0]}  #TO DO elke simulatie moet en vp_i.ccd krijgen (n bv normaal verdeelt)
-# dit is tijdelijk, moet aangepast worden
-data=pd.read_csv('C:/PostDoc/Python/IM/Boundary_conditions/Uccle-hour.dat', sep=';',skiprows=range(3))
-data.columns=['m', 'd', 'h','T_a','RH','G_gh','FF','DD','RR']
 
+#ALTERNATIVE GRIDS
+grid={'var':True,'names':['grid1','grid2','grid3','grid4','grid5','grid6']}
 
+#CLIMATES
+Climate_n={'value':[0.5,1.5],'dist':'design','var':True} 
+Climate_V={'value':[50.0],'dist':'design','var':True} 
+Climate_T={'value':[20.0],'dist':'design','var':True} 
+Climate_HIR={'value':[0.0015],'dist':'design','var':True} 
+Climate_moistprod={'value':[0.12],'dist':'design','var':True} #het is enkel de piek waarde die je op deze manier meegeeft 
+Climate_pos={'value':['Uccle-hour_N','Uccle-hour_S'],'dist':'design','var':True}
+Climate_path='C:/PostDoc/Python/IM/Boundary_conditions/'
+Climate_columns=['m', 'd', 'h','Ta','RH','G_gh','FF','DD','RAIN','RAD','CC']
 
-# VARIANTIONS/UNCERTAINTIES IN MATERIAL PROPERTIES
-
-# uniform (min,max)
-# normal  (mhu,sigma)
-# distrete (range)
-# design ([met waarden die moet aflopen])
+#MATERIAL PROPERTIES  [uniform (min,max);normal  (mhu,sigma);distrete (range), design ([met waarden die moet aflopen])]
 
 # CELIT
 # BASIC PARAMETERS
@@ -78,7 +82,6 @@ for i in range(int((len(grid_file)-1)/3)):
     MRC[2]=i+1
     MRC_all[i]=MRC #om te vermijden dat je heel de MRC in sommige files moet schrijven
 Celit_MRC={'value':range(len(MRC_all)),'values':MRC_all,'dist':'design','var':True}    
-
 
 # MINERAL WOOL
 MW_name='MINERALE WOL 20'
@@ -100,17 +103,11 @@ properties=['NAME','MEW', 'LAMBDA', 'KG','MRC']
 
 data=[[Celit_name,MW_name,OSB_name],[Celit_MEW,MW_MEW,OSB_MEW],[Celit_LAMBDA,MW_LAMBDA,OSB_LAMBDA],[Celit_KG,MW_KG,OSB_LAMBDA],[Celit_MRC,MW_MRC,OSB_MRC]]
 
-# Dataframe with all material properties 
-    # example to extract: Materials.one['NAME']           by order in Dataframe
-    # example to extract: Materials.one['VAR']            by order in Dataframe
-    # example to extract: Materials.one['MEW']['var']     by order in Dataframe
- 
 Materials = DataFrame(data, columns=materials,index=properties)
 
 
 ###############################################################################
-
-#alternatieve grids inlezen
+# READ ALTERNATIVE GRIDS
 dis_content=range(len(grid['names']))
 as_content=range(len(grid['names']))
 n=0
@@ -126,20 +123,7 @@ if grid['var']==True:
         as_content[n]=grid_file[np.min(as_lines):np.max(as_lines)+1]
         n=n+1
 ###############################################################################
-#klimaatfiles maken als het nodige is
-if indoor_pv['var']==True:
-    # ruwe data inlezen
-    # TODO: hoe je aan T_ex en RH_ex komt herschrijven
-    T_ex=data.T_a.values
-    RH_ex=data.RH.values
-    VP=VP_i(pv_in['n'],pv_in['V'],pv_in['n'],pv_in['moistprod'],T_ex,RH_ex)
-
-
-
-
-###############################################################################
-
-# aantal DESIGNS & UNCERTAINTIES voor materialen
+# NUMBER OF DESIGNS & UNCERTAINTIES FOR MATERIALS, GRIDS & CLIMATES (TO BOUNDARY LAYERS,...)
 n_design=1
 n_uncert=0
 index_m=[]
@@ -154,7 +138,56 @@ for i in Materials:
                       n_uncert=n_uncert+1               
 # aantal grid
 n_design=n_design*len(grid['names']) #moet je wel zeker zijn dat grid steeds parameter is (niet steeds zo!)
-                      
+# aantal climates
+# buitenklimaat is steeds een design value
+n_design=n_design*len(Climate_pos['value'])
+# binnenklimaat kan zowel een design parameter als een onzekerheid zijn
+if Climate_n['dist'] == 'design':
+    n_design=n_design*len(Climate_n['value'])
+else:
+    n_uncert=n_uncert+1
+if Climate_V['dist'] == 'design':
+    n_design=n_design*len(Climate_V['value'])
+else:
+    n_uncert=n_uncert+1
+if Climate_T['dist'] == 'design': 
+    n_design=n_design*len(Climate_T['value'])
+else:
+    n_uncert=n_uncert+1
+if Climate_HIR['dist'] == 'design': 
+    n_design=n_design*len(Climate_HIR['value'])
+else:
+    n_uncert=n_uncert+1
+if Climate_moistprod['dist'] == 'design':
+    n_design=n_design*len(Climate_moistprod['value'])
+else:
+    n_uncert=n_uncert+1
+
+
+
+###############################################################################
+# Climate files maken TO DO ook in input files nodige aanpassingen doen
+
+
+design_grid_climate=pd.DataFrame(cartesian([Climate_n['value'],Climate_V['value'],Climate_T['value'],Climate_HIR['value'],Climate_moistprod['value']]),columns=['n','V','T','HIR','Moistprod'])
+
+
+#eerste de climates maken, dan in een volgende stap toevoegen aan files (dit stukje code moet dus nog omlaag)
+for i in Climate_pos['value']:
+    # construct the outdoor climates
+    num_cl=0   
+    climate_data=pd.read_csv(Climate_path+i+'.dat', sep=';',skiprows=range(3))
+    climate_data.columns=Climate_columns
+    climate_out=climates.construct_out_ccd(climate_data)
+    climates.write_outdoor_ccd(base_dir,climate_out,i)  
+    for j in design_grid_climate.index:
+        num_cl=num_cl+1
+        indoor_par=[design_grid_climate['n'][j],design_grid_climate['V'][j],design_grid_climate['T'][j],design_grid_climate['HIR'][j],design_grid_climate['Moistprod'][j]]
+        climate_in=climates.construct_in_ccd(climate_data,indoor_par)
+        climates.write_indoor_ccd(base_dir,climate_in,i+'_'+str(num_cl),indoor_par)  
+   
+    
+              
 ###############################################################################
 #  2  AANMAKEN VAN DE DESIGN (TO DO HIERNA AANMAKEN VAN DE SAMPLES)
 
@@ -176,7 +209,8 @@ dis_lines=discretisation_lines(basefile)
 as_lines=assignments_lines(basefile)
 # Looking for lines of outputfolder to be changed
 output_line=outputfolder_lines(basefile)
-
+# Looking for lines of climate data
+climate_line=climate_lines(basefile)
 
 #MATERIALS IN DESIGNS
 design_opt=[]
@@ -193,9 +227,32 @@ if grid['var']==True:
     design_opt.append('grid')
     design_value.append(range(len(grid['names'])))
 #CLIMATES IN DESIGNS
-if indoor_pv['var']==True:
-    design_opt.append('PV_IN')
-    design_value.append(range(len(indoor_pv['names'])))
+if Climate_pos['var']==True:
+    design_opt.append('Location')
+    design_value.append(range(len(Climate_pos['value'])))
+if Climate_n['dist']=='design' and\
+   Climate_n['var']==True:
+       design_opt.append('n')
+       design_value.append(range(len(Climate_n['value'])))
+if Climate_V['dist']=='design' and\
+   Climate_V['var']==True:
+       design_opt.append('V')
+       design_value.append(range(len(Climate_V['value'])))
+if Climate_T['dist']=='design' and\
+   Climate_T['var']==True:
+       design_opt.append('T_in')
+       design_value.append(range(len(Climate_T['value'])))    
+if Climate_HIR['dist']=='design' and\
+   Climate_HIR['var']==True:
+       design_opt.append('HIR')
+       design_value.append(range(len(Climate_HIR['value'])))       
+if Climate_moistprod['dist']=='design' and\
+   Climate_moistprod['var']==True:
+       design_opt.append('moistprod')
+       design_value.append(range(len(Climate_moistprod['value'])))
+
+
+
 
 #CONSTRUCT DATAFRAME WITH ALL DESIGN COMBINATIONS
 design_grid=pd.DataFrame(cartesian(design_value),columns=design_opt)
@@ -214,12 +271,13 @@ design_grid.to_csv(resultfile_obj)
 
 
 
+
 #Series maken met referentie design in: daarna kan je er samples achtersteken
-copyfile=basefile
+copyfile=list(basefile) #je moet er list voorzetten anders verandert basefile samen met copyfile (zijn dan hetzelfde)
 design_files=[]
 
 for j in design_grid.index:
-    copyfile=basefile  
+    copyfile=list(basefile)
     for i in design_grid:
         # MATERIALEN
         if i[0:3]=='MEW':        
@@ -228,14 +286,38 @@ for j in design_grid.index:
             copyfile[mat_lines[i]] = '      LAMBDA                   = %g W/mK\n' % design_grid[i][j]
         if i[0:2]=='KG':    
             copyfile[mat_lines[i]] = '      KG                   = %g W/mK\n' % design_grid[i][j]
-        if i[0:3]=='MRC':    
-            test=1 #TO DO nog een scriptje voor schrijven
+        if i[0:3]=='MRC':       
+            for m in Materials:
+                if i=='MRC_'+Materials[m]['NAME']:
+                    MRC_local=Materials[m]['MRC']['values']   
+                    copyfile[mat_lines[i]] = '%s' % MRC_local[int(design_grid[i][j])][0]
+                    copyfile[mat_lines[i]+1] = '%s \n' % MRC_local[int(design_grid[i][j])][1]
+                    pc = reverse('%s' % MRC_local[int(design_grid[i][j])][0])
+                    ol = reverse('%s' % MRC_local[int(design_grid[i][j])][1])
+                    copyfile[mat_lines[i]+3] =  ol+'\n'
+                    copyfile[mat_lines[i]+4] =  pc      
         if i=='grid':
             for n in range(len(dis_lines)) :           
                 copyfile[dis_lines[n]] = dis_content[int(design_grid[i][j])][n]
                 copyfile[np.min(as_lines):]=as_content[int(design_grid[i][j])] 
-        if i=='PV_IN':
-            test=1 #TO DO
+        if i=='Location':
+                copyfile[dis_lines[n]] = dis_content[int(design_grid[i][j])][n]
+                copyfile[np.min(as_lines):]=as_content[int(design_grid[i][j])] 
+        if i=='n':
+                copyfile[dis_lines[n]] = dis_content[int(design_grid[i][j])][n]
+                copyfile[np.min(as_lines):]=as_content[int(design_grid[i][j])] 
+        if i=='V':
+                copyfile[dis_lines[n]] = dis_content[int(design_grid[i][j])][n]
+                copyfile[np.min(as_lines):]=as_content[int(design_grid[i][j])]                 
+        if i=='T_in':
+                copyfile[dis_lines[n]] = dis_content[int(design_grid[i][j])][n]
+                copyfile[np.min(as_lines):]=as_content[int(design_grid[i][j])]                 
+        if i=='HIR':
+                copyfile[dis_lines[n]] = dis_content[int(design_grid[i][j])][n]
+                copyfile[np.min(as_lines):]=as_content[int(design_grid[i][j])]
+        if i=='moistprod':
+                copyfile[dis_lines[n]] = dis_content[int(design_grid[i][j])][n]
+                copyfile[np.min(as_lines):]=as_content[int(design_grid[i][j])]                
     design_files.append(copyfile)
 
 
@@ -249,12 +331,6 @@ if n_uncert==0: #er zijn worden geen onzekerheden meegenomen
         fileobj = open(filename + '.dpj', 'w')
         fileobj.writelines(design_files[i])
         del fileobj
-
-
-
-
-
-
 
 
 

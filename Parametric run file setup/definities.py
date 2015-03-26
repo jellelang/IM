@@ -115,7 +115,28 @@ def assignments_lines(basefile):
     if ok:
         print('ERROR!!!  discretisation block not found')  
     lines=range(line_output+2,(len(basefile)))      
-    return lines      
+    return lines    
+#------------------------------------------------------------------------------
+# find the lines in which the assignments grid are
+# Input: basefile
+def climate_lines(basefile):
+    # T_out PV_out RAD T_sky T_in PV_in (eventueel PRES nog bijmaken later)    
+    climate_file=['T_in','T_out','VP_in','VP_out','RAD','T_sky','P_out','P_in']
+    lines=[]    
+    for j in range(len(climate_file)):
+        line_output=-1
+        ok=True
+        for i in basefile:
+            line_output=line_output+1
+            if i[-(len(climate_file[j])+1):-1]==climate_file[j] :
+                if basefile[line_output-2]=='    [CLIMATE_COND]\n':          
+                    ok=False        
+                    break
+        if ok:
+            print('ERROR!!!  some climate not block not found')  
+            line_output=0           
+        lines.append(line_output) 
+    return lines  
 #------------------------------------------------------------------------------
 
 def give_random(dictionary):  
@@ -131,8 +152,7 @@ def give_random(dictionary):
     
     
     
-    
-    
+#combinatie maken
 def cartesian(arrays, out=None):
     """
     Generate a cartesian product of input arrays.
@@ -185,7 +205,16 @@ def cartesian(arrays, out=None):
     
     
     
-    
+#draait een string van getallen om (handig om de MRC (Ol(pc) om te draaien)    
+def reverse(string):
+     f = [float(x) for x in string.split()]
+     f.reverse()
+     string=['']
+     for i in f:
+         string_i= '%s ' % str(i)
+         string.append(string_i)
+         string_rev = ''.join(string)   
+     return (string_rev)      
     
     
     
