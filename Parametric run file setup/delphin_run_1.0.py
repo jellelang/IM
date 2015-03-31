@@ -46,33 +46,33 @@ import subprocess
 ###############################################################################
 
 #BASEFILE 
-base_dir = 'C:/PostDoc/SIMULATIES/TESTPARAMETRIC' 
-basefile_name = 'C:/PostDoc/SIMULATIES/TESTPARAMETRIC/INPUT1' 
+base_dir = 'C:/PostDoc/SIMULATIES/PARAMETRIC/1' 
+basefile_name = 'C:/PostDoc/SIMULATIES/PARAMETRIC/1/INPUT1' 
 basefile_name_rel = 'INPUT1'
 
 #ALTERNATIVE GRIDS
 grid={'var':True,'names':['grid1','grid2','grid3','grid4','grid5','grid6']}
 
-#CLIMATES
-Climate_n={'value':[0.5,1.5],'dist':'design','var':True} 
+#CLIMATES: moet eigenlijk steeds op True staan, want je moet altijd een klimaat maken
+Climate_n={'value':[0.5],'dist':'design','var':True} 
 Climate_V={'value':[50.0],'dist':'design','var':True} 
 Climate_T={'value':[20.0],'dist':'design','var':True} 
 Climate_HIR={'value':[0.0015],'dist':'design','var':True} 
-Climate_moistprod={'value':[0.12],'dist':'design','var':True} #het is enkel de piek waarde die je op deze manier meegeeft 
-Climate_pos={'value':['Uccle-hour_N','Uccle-hour_S'],'dist':'design','var':True}
+Climate_moistprod={'value':[0.12],'dist':'design','var':True} #het is enkel de piekwaarde die je op deze manier meegeeft 
+Climate_pos={'value':['Uccle-hour_N'],'dist':'design','var':True}
 Climate_path='C:/PostDoc/Python/IM/Boundary_conditions/'
 Climate_columns=['m', 'd', 'h','Ta','RH','G_gh','FF','DD','RAIN','RAD','CC']
 
 #MATERIAL PROPERTIES  [uniform (min,max);normal  (mhu,sigma);distrete (range), design ([met waarden die moet aflopen])]
 
-# CELIT
+# MATERIAL 1
 # BASIC PARAMETERS
-Celit_name='Celit'
-Celit_MEW={'value':[5.0,10.0,20.0,40.0,80.0],'dist':'design','var':True}            
-Celit_LAMBDA={'value':[0.05,0.1,0.2],'dist':'design','var':True} # [0.05,0.1,0.2]    
-Celit_KG={'value':[0.05,0.1,0.2],'dist':'design','var':False}    
+name1='WIND_BARRIER'
+MEW1={'value':[5.0,10.0,20.0,40.0,80.0],'dist':'design','var':True}            
+LAMBDA1={'value':[0.05,0.1,0.2],'dist':'design','var':True} # [0.05,0.1,0.2]    
+KG1={'value':[0.05,0.1,0.2],'dist':'design','var':False}    
 # MATERIAL FUNCTIONS
-MRC=range(3)
+MRC=range(4)
 grid_obj = open(base_dir+'/MRC.txt', 'r')
 grid_file = grid_obj.readlines()
 MRC_all=range(int((len(grid_file)-1)/3))
@@ -81,27 +81,27 @@ for i in range(int((len(grid_file)-1)/3)):
     MRC[1]=grid_file[i*3+3]
     MRC[2]=i+1
     MRC_all[i]=MRC #om te vermijden dat je heel de MRC in sommige files moet schrijven
-Celit_MRC={'value':range(len(MRC_all)),'values':MRC_all,'dist':'design','var':True}    
+MRC1={'value':range(len(MRC_all)),'values':MRC_all,'dist':'design','var':True}    
 
-# MINERAL WOOL
-MW_name='MINERALE WOL 20'
-MW_MEW={'value':[1,2],'dist':'design','var':False}               
-MW_LAMBDA={'min':0.05,'max':0.5,'dist':'uniform','var':False}         
-MW_KG={'mhu':0.1,'sigma':0.005,'dist':'normal','var':False} 
-MW_MRC={'value':np.nan,'dist':'design','var':False}    
+# MATERIAL 2
+name2='MINERALE WOL 20'
+MEW2={'value':[1,2],'dist':'design','var':False}               
+LAMBDA2={'min':0.05,'max':0.5,'dist':'uniform','var':False}         
+KG2={'mhu':0.1,'sigma':0.005,'dist':'normal','var':False} 
+MRC2={'value':np.nan,'dist':'design','var':False}    
        
-# OSB (intern dampscherm)
-OSB_name='OSB Board'
-OSB_MEW={'range':[100,200,300,400],'dist':'discrete','var':False}               
-OSB_LAMBDA={'min':0.05,'max':0.5,'dist':'uniform','var':False}         
-OSB_KG={'min':7.2e-8,'max':7.2e-6,'dist':'uniform','var':False}    
-OSB_MRC={'value':np.nan,'dist':'design','var':False}    
+# MATERIAL 3
+name3='OSB Board'
+MEW3={'range':[100,200,300,400],'dist':'discrete','var':False}               
+LAMBDA3={'min':0.05,'max':0.5,'dist':'uniform','var':False}         
+KG3={'min':7.2e-8,'max':7.2e-6,'dist':'uniform','var':False}    
+MRC3={'value':np.nan,'dist':'design','var':False}    
 
 
 materials=['one','two','three']
 properties=['NAME','MEW', 'LAMBDA', 'KG','MRC']
 
-data=[[Celit_name,MW_name,OSB_name],[Celit_MEW,MW_MEW,OSB_MEW],[Celit_LAMBDA,MW_LAMBDA,OSB_LAMBDA],[Celit_KG,MW_KG,OSB_LAMBDA],[Celit_MRC,MW_MRC,OSB_MRC]]
+data=[[name1,name2,name3],[MEW1,MEW2,MEW3],[LAMBDA1,LAMBDA2,LAMBDA3],[KG1,KG2,LAMBDA3],[MRC1,MRC2,MRC3]]
 
 Materials = DataFrame(data, columns=materials,index=properties)
 
@@ -230,32 +230,55 @@ if grid['var']==True:
 if Climate_pos['var']==True:
     design_opt.append('Location')
     design_value.append(range(len(Climate_pos['value'])))
+    
+
+Climate_in_value=[]
 if Climate_n['dist']=='design' and\
    Climate_n['var']==True:
        design_opt.append('n')
        design_value.append(range(len(Climate_n['value'])))
+       Climate_in_value.append(range(len(Climate_n['value'])))
 if Climate_V['dist']=='design' and\
    Climate_V['var']==True:
        design_opt.append('V')
        design_value.append(range(len(Climate_V['value'])))
+       Climate_in_value.append(range(len(Climate_V['value'])))
 if Climate_T['dist']=='design' and\
    Climate_T['var']==True:
        design_opt.append('T_in')
-       design_value.append(range(len(Climate_T['value'])))    
+       design_value.append(range(len(Climate_T['value'])))   
+       Climate_in_value.append(range(len(Climate_T['value'])))
 if Climate_HIR['dist']=='design' and\
    Climate_HIR['var']==True:
        design_opt.append('HIR')
-       design_value.append(range(len(Climate_HIR['value'])))       
+       design_value.append(range(len(Climate_HIR['value'])))   
+       Climate_in_value.append(range(len(Climate_HIR['value'])))
 if Climate_moistprod['dist']=='design' and\
    Climate_moistprod['var']==True:
        design_opt.append('moistprod')
        design_value.append(range(len(Climate_moistprod['value'])))
-
+       Climate_in_value.append(range(len(Climate_moistprod['value'])))
 
 
 
 #CONSTRUCT DATAFRAME WITH ALL DESIGN COMBINATIONS
 design_grid=pd.DataFrame(cartesian(design_value),columns=design_opt)
+Climate_in_grid=pd.DataFrame(cartesian(Climate_in_value),columns=['n','V','T','HIR','moistprod'])
+#HIER MAAK JE EEN EXTRA KOLOM IN DESIGN_GRID OM AAN TE DUIDEN OVER WELK BINNENKLIMAAT HET GAAT
+ind=[]
+for i in design_grid.index:
+    n=-1
+    for j in Climate_in_grid.index:
+        n=n+1
+        if (Climate_in_grid.ix[j, 'n':'moistprod'].values==design_grid.ix[i, 'n':'moistprod'].values).all():
+            ind.append(Climate_in_grid.index.tolist()[n])
+
+design_grid['Climate_in']=ind
+
+
+
+
+
 
 
 
@@ -301,23 +324,16 @@ for j in design_grid.index:
                 copyfile[dis_lines[n]] = dis_content[int(design_grid[i][j])][n]
                 copyfile[np.min(as_lines):]=as_content[int(design_grid[i][j])] 
         if i=='Location':
-                copyfile[dis_lines[n]] = dis_content[int(design_grid[i][j])][n]
-                copyfile[np.min(as_lines):]=as_content[int(design_grid[i][j])] 
-        if i=='n':
-                copyfile[dis_lines[n]] = dis_content[int(design_grid[i][j])][n]
-                copyfile[np.min(as_lines):]=as_content[int(design_grid[i][j])] 
-        if i=='V':
-                copyfile[dis_lines[n]] = dis_content[int(design_grid[i][j])][n]
-                copyfile[np.min(as_lines):]=as_content[int(design_grid[i][j])]                 
-        if i=='T_in':
-                copyfile[dis_lines[n]] = dis_content[int(design_grid[i][j])][n]
-                copyfile[np.min(as_lines):]=as_content[int(design_grid[i][j])]                 
-        if i=='HIR':
-                copyfile[dis_lines[n]] = dis_content[int(design_grid[i][j])][n]
-                copyfile[np.min(as_lines):]=as_content[int(design_grid[i][j])]
-        if i=='moistprod':
-                copyfile[dis_lines[n]] = dis_content[int(design_grid[i][j])][n]
-                copyfile[np.min(as_lines):]=as_content[int(design_grid[i][j])]                
+                # outdoor
+                if climate_line[1]!=0: copyfile[climate_line[1]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_T_ex.ccd \n' %Climate_pos['value'][int(design_grid[i][j])]
+                if climate_line[3]!=0: copyfile[climate_line[3]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_VP_ex.ccd \n' %Climate_pos['value'][int(design_grid[i][j])]              
+                if climate_line[4]!=0: copyfile[climate_line[4]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_RAD.ccd \n' %Climate_pos['value'][int(design_grid[i][j])]
+                if climate_line[5]!=0: copyfile[climate_line[5]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_T_sky.ccd \n' %Climate_pos['value'][int(design_grid[i][j])]
+                if climate_line[6]!=0: copyfile[climate_line[6]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_PR_ex.ccd \n' %Climate_pos['value'][int(design_grid[i][j])]
+                if climate_line[7]!=0: copyfile[climate_line[7]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_PR_in.ccd \n' %Climate_pos['value'][int(design_grid[i][j])]
+                # indoor
+                if climate_line[0]!=0:  copyfile[climate_line[0]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_%s_T_in.ccd \n' %(Climate_pos['value'][int(design_grid[i][j])], str(int(design_grid[i][j])+1))
+                if climate_line[2]!=0:  copyfile[climate_line[2]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_%s_VP_in.ccd \n' %(Climate_pos['value'][int(design_grid[i][j])], str(int(design_grid[i][j])+1))
     design_files.append(copyfile)
 
 

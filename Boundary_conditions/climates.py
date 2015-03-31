@@ -32,6 +32,7 @@ def construct_out_ccd(DATA):
     c=DATA['CC']
     #DATA['T_sky']=(Ta+273)*((0.8+Td/250)**0.25)-273  
     DATA['T_sky']=Ta-(23.8-0.2*Ta)*(1-0.87*c/8) # als je cloud coverin factor niet hebt
+    DATA['T_ground']=Ta
     return DATA
 
 
@@ -59,8 +60,11 @@ def write_ccd(path,type_input,value,name,indoor_par):
         schrijf.write('RH	---	 \n')	
         value=value/100
     if type_input=='Ta':
-        schrijf=open(path+'/'+name+'_Ta.ccd', 'w')
+        schrijf=open(path+'/'+name+'_T_ex.ccd', 'w')
         schrijf.write('TC	C	 \n')	
+    if type_input=='T_ground':
+        schrijf=open(path+'/'+name+'_T_ground.ccd', 'w')
+        schrijf.write('TC	C	 \n')
     if type_input=='RAD':
         schrijf=open(path+'/'+name+'_RAD.ccd', 'w')
         schrijf.write('SHWRAD  W/m2\n')	    
@@ -71,10 +75,10 @@ def write_ccd(path,type_input,value,name,indoor_par):
         schrijf=open(path+'/'+name+'_RAD_shrt_SW.ccd', 'w')
         schrijf.write('SHWRAD  W/m2\n')	
     if type_input=='VP_ex':
-        schrijf=open(path+'/'+name+'_PV_ex.ccd', 'w')
+        schrijf=open(path+'/'+name+'_VP_ex.ccd', 'w')
         schrijf.write('VAPPRESS 	Pa\n')        
     if type_input=='VP_in':
-        schrijf=open(path+'/'+name+'_PV_in.ccd', 'w') 
+        schrijf=open(path+'/'+name+'_VP_in.ccd', 'w') 
         schrijf.write('# n: %0.0f \n' %indoor_par[0])  
         schrijf.write('# V: %0.0f \n' %indoor_par[1])  
         schrijf.write('# HIR: %0.0f \n' %indoor_par[3])  
@@ -165,7 +169,7 @@ def VP_i(indoor_par,T_ex,RH_ex):
     
 #writes one ccd
 def write_outdoor_ccd(path,data,name):
-    types=['T_sky','RH','Ta','RAD','VP_ex']
+    types=['T_sky','RH','Ta','RAD','VP_ex','T_ground']
     for i in types:
         par=0
         write_ccd(path,i,data[i],name,par)
@@ -174,7 +178,7 @@ def write_outdoor_ccd(path,data,name):
     
 #writes one ccd
 def write_indoor_ccd(path,data,name,indoor_par):
-    types=['VP_in'] #je zou T_in hier ook kunnen bijvoegen als je meerder T_in's wil maken
+    types=['VP_in','T_in'] #je zou T_in hier ook kunnen bijvoegen als je meerder T_in's wil maken
     for i in types:
         write_ccd(path,i,data[i],name,indoor_par)
         

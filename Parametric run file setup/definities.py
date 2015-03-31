@@ -121,19 +121,19 @@ def assignments_lines(basefile):
 # Input: basefile
 def climate_lines(basefile):
     # T_out PV_out RAD T_sky T_in PV_in (eventueel PRES nog bijmaken later)    
-    climate_file=['T_in','T_out','VP_in','VP_out','RAD','T_sky','P_out','P_in']
+    climate_file=['T_in','T_out','VP_in','VP_out','RAD','T_sky','PR_out','PR_in']
     lines=[]    
     for j in range(len(climate_file)):
         line_output=-1
         ok=True
         for i in basefile:
             line_output=line_output+1
-            if i[-(len(climate_file[j])+1):-1]==climate_file[j] :
-                if basefile[line_output-2]=='    [CLIMATE_COND]\n':          
+            if i[-(len(climate_file[j])+1):-1]==climate_file[j] and\
+               basefile[line_output-2]=='    [CLIMATE_COND]\n':          
                     ok=False        
                     break
         if ok:
-            print('ERROR!!!  some climate not block not found')  
+            print('ERROR!!!  %s not block not found'  %climate_file[j])  
             line_output=0           
         lines.append(line_output) 
     return lines  
