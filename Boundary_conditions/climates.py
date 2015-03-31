@@ -95,7 +95,10 @@ def write_ccd(path,type_input,value,name,indoor_par):
          pos=day*24+hour
          if pos == len(value):
              break
-         schrijf.write('%0.0f %2.0f:%0.0f0:0%0.0f %3.4f\n' %(day,hour,0,0,value[pos]))
+         pos_shift=pos+5856
+         if pos_shift>=8760:
+             pos_shift=pos-(8760-5856)
+         schrijf.write('%0.0f %2.0f:%0.0f0:0%0.0f %3.4f\n' %(day,hour,0,0,value[pos_shift]))
          if h == len(value): 
               break 
        if pos == len(value):
