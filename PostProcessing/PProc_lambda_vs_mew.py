@@ -23,8 +23,8 @@ import mould
 
 
 
-basefile_name = 'C:/JELLE/SIMULATIES/ INPUT5' #opletten met spatie (vorige keer weggelaten omdat ik files manueel heb aangepast voor reeks 3)
-basefile_name2 = 'C:/JELLE/SIMULATIES/INPUT5'
+basefile_name = 'C:/JELLE/SIMULATIES/ INPUT4' #opletten met spatie (vorige keer weggelaten omdat ik files manueel heb aangepast voor reeks 3)
+basefile_name2 = 'C:/JELLE/SIMULATIES/INPUT4'
 
 
 
@@ -57,8 +57,8 @@ for i in range(N+1):
         results.append(data.MC.max())
         
         output_filename_max = folder + '/cavity.out' 
-        condens=pd.read_csv(output_filename_max,skiprows=range(13), header=None,sep='\s+')
-        results_cond.append(condens[1].max()) #[4]  range(8890)
+        condens=pd.read_csv(output_filename_max,skiprows=range(8890), header=None,sep='\s+')
+        results_cond.append(condens[4].max()) #[4]  range(8890)
 
         output_filename_RH = folder + '/RH1.out' 
         RH=pd.read_csv(output_filename_RH,skiprows=range(13), header=None,sep='\s+')
@@ -128,7 +128,7 @@ plt.figure()
 CS = plt.contourf(X, Y, M)
 plt.title('MOULD INDEX (-)')
 axes = plt.gca()
-axes.set_xlim([0,20])
+axes.set_xlim([0,120])
 plt.xlabel('MEW (-)')
 plt.ylabel('LAMBDA (W/m^2K)')
 colorbar(CS)

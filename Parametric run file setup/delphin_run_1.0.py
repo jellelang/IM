@@ -17,13 +17,15 @@ from pandas import Series, DataFrame
 import math
 import sys,os
 path='C:/PostDoc/Python/IM/Parametric run file setup'
+path='C:/JELLE/SIMULATION_PARAMETRIC/1'
 sys.path.append(path)
 from definities import *
 # laat toe om alle functie en classes die gedefinieerd zijn in BASICS te gebruiken
 import sys,os
 path='C:/PostDoc/Python/IM/BASICS'
+path='C:/JELLE/IM/BASICS'
 sys.path.append(path)
-path='C:/PostDoc/Python/IM/Boundary_conditions'
+path='C:/JELLE/IM/Boundary_conditions'
 sys.path.append(path)
 #from path import *
 from physics import *
@@ -46,8 +48,11 @@ import subprocess
 ###############################################################################
 
 #BASEFILE 
-base_dir = 'C:/PostDoc/SIMULATIES/PARAMETRIC/1' 
-basefile_name = 'C:/PostDoc/SIMULATIES/PARAMETRIC/1/INPUT1' 
+base_dir = 'C:/PostDoc/SIMULATIES/PARAMETRIC/1'
+base_dir = 'C:/JELLE/SIMULATION_PARAMETRIC/1' 
+basefile_name = 'C:/PostDoc/SIMULATIES/PARAMETRIC/1/INPUT1'
+basefile_name = 'C:/JELLE/SIMULATION_PARAMETRIC/1/INPUT1' 
+
 basefile_name_rel = 'INPUT1'
 
 #ALTERNATIVE GRIDS

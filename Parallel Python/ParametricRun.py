@@ -9,11 +9,11 @@ import os, pp, numpy, shutil
 
 import sys
 
-sys.path.append(r'C:\JELLE\SIMULATIES')
+sys.path.append(r'C:\JELLE\IM\Parallel Python')
 
 import pymosim       #TO DO, er voor zorgen dat deze pymosim niet in map met simuaties moet zitten
 
-work_dir = r'C:\JELLE\SIMULATIES'
+work_dir = r'C:\JELLE\SIMULATIES_JAN2015\DELPHIN_FILES'
 os.chdir(work_dir)
 
 # first we must make a dictionary of the parameteric we want to do
@@ -29,12 +29,12 @@ os.chdir(work_dir)
 # list of cd-paths where all sub-sets are located as for parallel python
 sub_dir = []
 #restart=range(101)
-for i in range(36):
-    sub_dir.append('INPUT4_%02d' %i)
+for i in range(80):
+    sub_dir.append('INPUT%02d' %i)
 
 # initialise parallel python
 ppservers=()
-job_server = pp.Server(ppservers = ppservers, ncpus=7)
+job_server = pp.Server(ppservers = ppservers, ncpus=8)
 # define the inputs and start the simulations
 inputs = tuple(sub_dir)
 jobs = [(input, job_server.submit(pymosim.start_parametric_run, args = (input,), modules = ("subprocess","os"))) for input in inputs]
