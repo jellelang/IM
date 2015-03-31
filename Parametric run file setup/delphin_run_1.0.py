@@ -207,7 +207,7 @@ del basefile_obj
 
 
 
-mat_lines = Series([])
+mat_lines = Series([], dtype=int)
 for i in Materials:   
         a=material_lines(Materials[i]['NAME'],basefile)
         mat_lines=mat_lines.append(a)
