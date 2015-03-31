@@ -43,7 +43,7 @@ import subprocess
 # TO DO & notes
 ###############################################################################
 # 1) opletten dat lijnen niet veranderen ondertussen: zorg ervoor dat elke aan-
-# 2) in de file tot hetzelfde aantal lijnen resulteert
+# 2) in de file tot hetzelfde aantal lijnen resulteert.
 ###############################################################################
 
 
