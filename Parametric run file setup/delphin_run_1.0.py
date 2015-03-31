@@ -16,16 +16,21 @@ import  numpy.random as random
 from pandas import Series, DataFrame
 import math
 import sys,os
-path='C:/PostDoc/Python/IM/Parametric run file setup'
-path='C:/JELLE/SIMULATION_PARAMETRIC/1'
+direct_py='C:/PostDoc/Python' #'C:/JELLE'
+direct_sim='C:/PostDoc/SIMULATIES' #'C:/JELLE'
+
+path1=direct_py+ '/IM/Parametric run file setup'
+path2=direct_py+ '/IM/BASICS'
+path3=direct_py+ '/IM/Boundary_conditions'
+
+path=path1
 sys.path.append(path)
 from definities import *
 # laat toe om alle functie en classes die gedefinieerd zijn in BASICS te gebruiken
 import sys,os
-path='C:/PostDoc/Python/IM/BASICS'
-path='C:/JELLE/IM/BASICS'
+path=path2
 sys.path.append(path)
-path='C:/JELLE/IM/Boundary_conditions'
+path=path3
 sys.path.append(path)
 #from path import *
 from physics import *
@@ -38,7 +43,7 @@ import subprocess
 # TO DO & notes
 ###############################################################################
 # 1) opletten dat lijnen niet veranderen ondertussen: zorg ervoor dat elke aan-
-# 2) in de file tot hetzelfde aantal lijnen resulteert
+# 2) in de file tot hetzelfde aantal lijnen resulteert.
 ###############################################################################
 
 
@@ -48,12 +53,10 @@ import subprocess
 ###############################################################################
 
 #BASEFILE 
-base_dir = 'C:/PostDoc/SIMULATIES/PARAMETRIC/1'
-base_dir = 'C:/JELLE/SIMULATION_PARAMETRIC/1' 
-basefile_name = 'C:/PostDoc/SIMULATIES/PARAMETRIC/1/INPUT1'
-basefile_name = 'C:/JELLE/SIMULATION_PARAMETRIC/1/INPUT1' 
-
+base_dir = direct_sim+'/PARAMETRIC/1' 
+basefile_name = direct_sim+'/PARAMETRIC/1/INPUT1' 
 basefile_name_rel = 'INPUT1'
+
 
 #ALTERNATIVE GRIDS
 grid={'var':True,'names':['grid1','grid2','grid3','grid4','grid5','grid6']}
@@ -65,7 +68,7 @@ Climate_T={'value':[20.0],'dist':'design','var':True}
 Climate_HIR={'value':[0.0015],'dist':'design','var':True} 
 Climate_moistprod={'value':[0.12],'dist':'design','var':True} #het is enkel de piekwaarde die je op deze manier meegeeft 
 Climate_pos={'value':['Uccle-hour_N'],'dist':'design','var':True}
-Climate_path='C:/PostDoc/Python/IM/Boundary_conditions/'
+Climate_path=path3+'/'
 Climate_columns=['m', 'd', 'h','Ta','RH','G_gh','FF','DD','RAIN','RAD','CC']
 
 #MATERIAL PROPERTIES  [uniform (min,max);normal  (mhu,sigma);distrete (range), design ([met waarden die moet aflopen])]
