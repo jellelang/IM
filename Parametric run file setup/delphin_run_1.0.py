@@ -16,8 +16,8 @@ import  numpy.random as random
 from pandas import Series, DataFrame
 import math
 import sys,os
-direct_py='C:/PostDoc/Python' #'C:/JELLE'
-direct_sim='C:/PostDoc/SIMULATIES' #'C:/JELLE'
+direct_py='C:/JELLE' #'C:/PostDoc/SIMULATIES'
+direct_sim='C:/JELLE' #'C:/PostDoc/SIMULATIES'
 
 path1=direct_py+ '/IM/Parametric run file setup'
 path2=direct_py+ '/IM/BASICS'
