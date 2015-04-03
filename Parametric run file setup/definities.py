@@ -121,7 +121,7 @@ def assignments_lines(basefile):
 # Input: basefile
 def climate_lines(basefile):
     # T_out PV_out RAD T_sky T_in PV_in (eventueel PRES nog bijmaken later)    
-    climate_file=['T_in','T_out','VP_in','VP_out','RAD','T_sky','PR_out','PR_in']
+    climate_file=['T_in','T_out','VP_in','VP_out','RAD','T_sky','PR_out','PR_in','RH_in','RH_out']
     lines=[]    
     for j in range(len(climate_file)):
         line_output=-1
