@@ -141,6 +141,10 @@ def VP_i(indoor_par,T_ex,RH_ex):
     HIR=indoor_par[3]
     moistprod=[indoor_par[4],0]#die nul is nu wel vast
 
+    EN=indoor_par[5]
+    EN_class=indoor_par[6]
+
+
     # waarden gebruikt in doctoraat
     # n=0.5 of 0.15 #zie Limb,2001 (75-150 m³/h) is al weinig, normaal minium 75 m³/h in belgië
     # V=50  #is al een kleine kamer
@@ -174,21 +178,22 @@ def VP_i(indoor_par,T_ex,RH_ex):
             PV_in[i]=PV_ex[i]
         elif PV_in[i]>vp(T_in[i]-273.15,100):
             PV_in[i]=0.995*vp(T_in[i]-273.15,100)
-            
-            
-            
-    #oppassen stukje bijgeschreven om klimaat klasse te gebruiken!!            
-          
-    for i in uur[1:8760]:
-        if T_ex[i]<273.15:
-            PV_in[i]=PV_ex[i]+550
-        if T_ex[i]>273.15 and T_ex[i]<293.15:
-            PV_in[i]=PV_ex[i]+550*(293.15-T_ex[i])/20
-        if T_ex[i]>293.15:
-            PV_in[i]=PV_ex[i]
-        if PV_in[i]>vp(T_in[i]-273.15,100):
-            PV_in[i]=0.995*vp(T_in[i]-273.15,100)          
          
+    #ISO 13788:2001     
+    if EN==True:   
+        if EN_class==3.0:
+            max_vp=550
+        if EN_class==4.0:
+            max_vp=810        
+        for i in uur[1:8760]:
+            if T_ex[i]<273.15:
+                PV_in[i]=PV_ex[i]+max_vp
+            if T_ex[i]>273.15 and T_ex[i]<293.15:
+                PV_in[i]=PV_ex[i]+max_vp*(293.15-T_ex[i])/20
+            if T_ex[i]>293.15:
+                PV_in[i]=PV_ex[i]
+            if PV_in[i]>vp(T_in[i]-273.15,100):
+                PV_in[i]=0.995*vp(T_in[i]-273.15,100)          
             
     return PV_in
     
