@@ -53,13 +53,13 @@ import subprocess
 ###############################################################################
 
 #BASEFILE 
-base_dir = direct_sim+'/PARAMETRIC/1' 
-basefile_name = direct_sim+'/PARAMETRIC/1/INPUT1' 
+base_dir = direct_sim+'/PARAMETRIC/6' 
+basefile_name = direct_sim+'/PARAMETRIC/6/INPUT1' 
 basefile_name_rel = 'INPUT1'
 
 
 #ALTERNATIVE GRIDS
-grid={'var':True,'names':['grid1','grid2','grid3','grid4','grid5','grid6']}
+grid={'var':True,'names':['grid1','grid2','grid3','grid4','grid5','grid6','grid7','grid8','grid9','grid10']}
 
 #CLIMATES: moet eigenlijk steeds op True staan, want je moet altijd een klimaat maken
 Climate_n={'value':[0.5],'dist':'design','var':True} 
@@ -69,14 +69,14 @@ Climate_HIR={'value':[0.0015],'dist':'design','var':True}
 Climate_moistprod={'value':[0.12],'dist':'design','var':True} #het is enkel de piekwaarde die je op deze manier meegeeft 
 Climate_pos={'value':['Uccle-hour_N'],'dist':'design','var':True}
 Climate_path=path3+'/'
-Climate_columns=['m', 'd', 'h','Ta','RH','G_gh','FF','DD','RAIN','RAD','CC']
+Climate_columns=['m', 'd', 'h','T_ex','RH_ex','G_gh','FF','DD','RAIN','RAD','CC']
 
 #MATERIAL PROPERTIES  [uniform (min,max);normal  (mhu,sigma);distrete (range), design ([met waarden die moet aflopen])]
 
 # MATERIAL 1
 # BASIC PARAMETERS
 name1='WIND_BARRIER'
-MEW1={'value':[5.0,10.0,20.0,40.0,80.0],'dist':'design','var':True}            
+MEW1={'value':[2.0,5.0,20.0,40.0,80.0],'dist':'design','var':True}            
 LAMBDA1={'value':[0.05,0.1,0.2],'dist':'design','var':True} # [0.05,0.1,0.2]    
 KG1={'value':[0.05,0.1,0.2],'dist':'design','var':False}    
 # MATERIAL FUNCTIONS
@@ -88,7 +88,7 @@ for i in range(int((len(grid_file)-1)/3)):
     MRC[0]=grid_file[i*3+2]
     MRC[1]=grid_file[i*3+3]
     MRC[2]=i+1
-    MRC_all[i]=MRC #om te vermijden dat je heel de MRC in sommige files moet schrijven
+    MRC_all[i]=copy(MRC) #om te vermijden dat je heel de MRC in sommige files moet schrijven
 MRC1={'value':range(len(MRC_all)),'values':MRC_all,'dist':'design','var':True}    
 
 # MATERIAL 2
@@ -337,11 +337,14 @@ for j in design_grid.index:
                 if climate_line[3]!=0: copyfile[climate_line[3]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_VP_ex.ccd \n' %Climate_pos['value'][int(design_grid[i][j])]              
                 if climate_line[4]!=0: copyfile[climate_line[4]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_RAD.ccd \n' %Climate_pos['value'][int(design_grid[i][j])]
                 if climate_line[5]!=0: copyfile[climate_line[5]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_T_sky.ccd \n' %Climate_pos['value'][int(design_grid[i][j])]
-                if climate_line[6]!=0: copyfile[climate_line[6]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_PR_ex.ccd \n' %Climate_pos['value'][int(design_grid[i][j])]
-                if climate_line[7]!=0: copyfile[climate_line[7]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_PR_in.ccd \n' %Climate_pos['value'][int(design_grid[i][j])]
-                # indoor
+                #if climate_line[6]!=0: copyfile[climate_line[6]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_PR_ex.ccd \n' %Climate_pos['value'][int(design_grid[i][j])]
+                #if climate_line[7]!=0: copyfile[climate_line[7]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_PR_in.ccd \n' %Climate_pos['value'][int(design_grid[i][j])]
+                if climate_line[9]!=0:  copyfile[climate_line[9]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_RH_ex.ccd \n' %Climate_pos['value'][int(design_grid[i][j])]  
+               # indoor
                 if climate_line[0]!=0:  copyfile[climate_line[0]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_%s_T_in.ccd \n' %(Climate_pos['value'][int(design_grid[i][j])], str(int(design_grid[i][j])+1))
                 if climate_line[2]!=0:  copyfile[climate_line[2]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_%s_VP_in.ccd \n' %(Climate_pos['value'][int(design_grid[i][j])], str(int(design_grid[i][j])+1))
+                if climate_line[8]!=0:  copyfile[climate_line[8]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_%s_RH_in.ccd \n' %(Climate_pos['value'][int(design_grid[i][j])], str(int(design_grid[i][j])+1))
+
     design_files.append(copyfile)
 
 

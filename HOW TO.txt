@@ -11,6 +11,6 @@ git commit -m "commentaar toevoegen aan actie)
 git push origin master (uploaden)
 
 git pull (downloaden van updates)
-
+co
 jellelang
 jefkeprims1   

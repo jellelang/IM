@@ -25,10 +25,10 @@ indoor_pv={'var':False,'n':0.5,'V':50,'HIR':1.5/1000,'moistprod':[0.12,0]}  #TO 
 #hier matrix met alles in maken
 def construct_out_ccd(DATA):
     #create PV_ex
-    DATA['VP_ex']=vp(DATA['Ta'],DATA['RH'])
+    DATA['VP_ex']=vp(DATA['T_ex'],DATA['RH_ex'])
     #create T_sky
-    Ta=DATA['Ta']
-    Td=dewpoint(DATA['Ta'],DATA['RH'])
+    Ta=DATA['T_ex']
+    Td=dewpoint(DATA['T_ex'],DATA['RH_ex'])
     c=DATA['CC']
     #DATA['T_sky']=(Ta+273)*((0.8+Td/250)**0.25)-273  
     DATA['T_sky']=Ta-(23.8-0.2*Ta)*(1-0.87*c/8) # als je cloud coverin factor niet hebt
@@ -43,8 +43,14 @@ def construct_out_ccd(DATA):
 #hier matrix met alles in maken
 def construct_in_ccd(DATA,indoor_par):
     #create PV_ex
-    DATA['VP_in']=VP_i(indoor_par,DATA['Ta'],DATA['RH'])
+    DATA['VP_in']=VP_i(indoor_par,DATA['T_ex'],DATA['RH_ex'])
     DATA['T_in']=indoor_par[2]*np.ones(8760) 
+    T_in=indoor_par[2]*np.ones(8760) 
+    DATA['RH_in']=DATA['VP_in']/vp(T_in,100*np.ones(8760))*100   
+    #To Do: properder schrijven (gehaast)    
+    for i in range(len(DATA['RH_in'])):
+        if DATA['RH_in'][i]>=100:
+            DATA['RH_in'][i]=99 
     return DATA
 
 
@@ -55,11 +61,15 @@ def write_ccd(path,type_input,value,name,indoor_par):
     if type_input=='T_sky':
         schrijf=open(path+'/'+name+'_T_sky.ccd', 'w')
         schrijf.write('TC	C	 \n')	
-    if type_input=='RH':
-        schrijf=open(path+'/'+name+'_RH.ccd', 'w')
+    if type_input=='RH_ex':
+        schrijf=open(path+'/'+name+'_RH_ex.ccd', 'w')
         schrijf.write('RH	---	 \n')	
         value=value/100
-    if type_input=='Ta':
+    if type_input=='RH_in':
+        schrijf=open(path+'/'+name+'_RH_in.ccd', 'w')
+        schrijf.write('RH	---	 \n')	
+        value=value/100
+    if type_input=='T_ex':
         schrijf=open(path+'/'+name+'_T_ex.ccd', 'w')
         schrijf.write('TC	C	 \n')	
     if type_input=='T_ground':
@@ -123,6 +133,8 @@ def VP_i(indoor_par,T_ex,RH_ex):
 #        % HIR: hygric inertia response  
 
 
+    #opletten stukje overschreven om klimaat klasse te kunnen gebruiken
+
     n=indoor_par[0]
     V=indoor_par[1]
     T_in=(indoor_par[2]+273.15)*np.ones(8760)    
@@ -162,6 +174,22 @@ def VP_i(indoor_par,T_ex,RH_ex):
             PV_in[i]=PV_ex[i]
         elif PV_in[i]>vp(T_in[i]-273.15,100):
             PV_in[i]=0.995*vp(T_in[i]-273.15,100)
+            
+            
+            
+    #oppassen stukje bijgeschreven om klimaat klasse te gebruiken!!            
+          
+    for i in uur[1:8760]:
+        if T_ex[i]<273.15:
+            PV_in[i]=PV_ex[i]+550
+        if T_ex[i]>273.15 and T_ex[i]<293.15:
+            PV_in[i]=PV_ex[i]+550*(293.15-T_ex[i])/20
+        if T_ex[i]>293.15:
+            PV_in[i]=PV_ex[i]
+        if PV_in[i]>vp(T_in[i]-273.15,100):
+            PV_in[i]=0.995*vp(T_in[i]-273.15,100)          
+         
+            
     return PV_in
     
     
@@ -172,7 +200,7 @@ def VP_i(indoor_par,T_ex,RH_ex):
     
 #writes one ccd
 def write_outdoor_ccd(path,data,name):
-    types=['T_sky','RH','Ta','RAD','VP_ex','T_ground']
+    types=['T_sky','RH_ex','T_ex','RAD','VP_ex','T_ground']
     for i in types:
         par=0
         write_ccd(path,i,data[i],name,par)
@@ -181,7 +209,7 @@ def write_outdoor_ccd(path,data,name):
     
 #writes one ccd
 def write_indoor_ccd(path,data,name,indoor_par):
-    types=['VP_in','T_in'] #je zou T_in hier ook kunnen bijvoegen als je meerder T_in's wil maken
+    types=['VP_in','T_in','RH_in'] #je zou T_in hier ook kunnen bijvoegen als je meerder T_in's wil maken
     for i in types:
         write_ccd(path,i,data[i],name,indoor_par)
         
