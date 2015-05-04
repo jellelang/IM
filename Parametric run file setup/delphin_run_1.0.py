@@ -59,15 +59,15 @@ basefile_name_rel = 'INPUT1'
 
 
 #ALTERNATIVE GRIDS
-grid={'var':True,'names':['grid1','grid2','grid3','grid4','grid5','grid6']}
+grid={'var':True,'names':['grid1']}
 
 #CLIMATES: moet eigenlijk steeds op True staan, want je moet altijd een klimaat maken
-Climate_n={'value':[0.5],'dist':'design','var':True} 
+Climate_n={'value':[0.5,1.5],'dist':'design','var':True} 
 Climate_V={'value':[50.0],'dist':'design','var':True} 
 Climate_T={'value':[20.0],'dist':'design','var':True} 
 Climate_HIR={'value':[0.0015],'dist':'design','var':True} 
 Climate_moistprod={'value':[0.12],'dist':'design','var':True} #het is enkel de piekwaarde die je op deze manier meegeeft 
-Climate_pos={'value':['Uccle-hour_N'],'dist':'design','var':True}
+Climate_pos={'value':['Uccle-hour_N','Uccle-hour_S'],'dist':'design','var':True}
 Climate_path=path3+'/'
 Climate_columns=['m', 'd', 'h','T_ex','RH_ex','G_gh','FF','DD','RAIN','RAD','CC']
 
@@ -76,8 +76,8 @@ Climate_columns=['m', 'd', 'h','T_ex','RH_ex','G_gh','FF','DD','RAIN','RAD','CC'
 # MATERIAL 1
 # BASIC PARAMETERS
 name1='WIND_BARRIER'
-MEW1={'value':[5.0,10.0,20.0,40.0,80.0],'dist':'design','var':True}            
-LAMBDA1={'value':[0.05,0.1,0.2],'dist':'design','var':True} # [0.05,0.1,0.2]    
+MEW1={'value':[5.0,10.0,20.0,40.0,80.0],'dist':'design','var':False}            
+LAMBDA1={'value':[0.05,0.1,0.2],'dist':'design','var':False} # [0.05,0.1,0.2]    
 KG1={'value':[0.05,0.1,0.2],'dist':'design','var':False}    
 # MATERIAL FUNCTIONS
 MRC=range(4)
@@ -89,7 +89,7 @@ for i in range(int((len(grid_file)-1)/3)):
     MRC[1]=grid_file[i*3+3]
     MRC[2]=i+1
     MRC_all[i]=copy(MRC) #om te vermijden dat je heel de MRC in sommige files moet schrijven
-MRC1={'value':range(len(MRC_all)),'values':MRC_all,'dist':'design','var':True}    
+MRC1={'value':range(len(MRC_all)),'values':MRC_all,'dist':'design','var':False}    
 
 # MATERIAL 2
 name2='MINERALE WOL 20'
@@ -203,7 +203,7 @@ basefile_obj = open(basefile_name + '.dpj', 'r')
 basefile = basefile_obj.readlines()
 del basefile_obj
 
-# Looking for lines of  material to be changed and storing in mat_lines
+# Looking for lines of  materialC:\Program Files (x86)\MiKTeX 2.9\miktex\bin to be changed and storing in mat_lines
 
 
 
@@ -341,9 +341,9 @@ for j in design_grid.index:
                 #if climate_line[7]!=0: copyfile[climate_line[7]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_PR_in.ccd \n' %Climate_pos['value'][int(design_grid[i][j])]
                 if climate_line[9]!=0:  copyfile[climate_line[9]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_RH_ex.ccd \n' %Climate_pos['value'][int(design_grid[i][j])]  
                # indoor
-                if climate_line[0]!=0:  copyfile[climate_line[0]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_%s_T_in.ccd \n' %(Climate_pos['value'][int(design_grid[i][j])], str(int(design_grid[i][j])+1))
-                if climate_line[2]!=0:  copyfile[climate_line[2]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_%s_VP_in.ccd \n' %(Climate_pos['value'][int(design_grid[i][j])], str(int(design_grid[i][j])+1))
-                if climate_line[8]!=0:  copyfile[climate_line[8]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_%s_RH_in.ccd \n' %(Climate_pos['value'][int(design_grid[i][j])], str(int(design_grid[i][j])+1))
+                if climate_line[0]!=0:  copyfile[climate_line[0]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_%s_T_in.ccd \n' %(Climate_pos['value'][int(design_grid[i][j])], str(int(design_grid['Climate_in'][j])+1))
+                if climate_line[2]!=0:  copyfile[climate_line[2]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_%s_VP_in.ccd \n' %(Climate_pos['value'][int(design_grid[i][j])], str(int(design_grid['Climate_in'][j])+1))
+                if climate_line[8]!=0:  copyfile[climate_line[8]+2] ='FILENAME                 = $(PROJECT_DIR)\\' + '%s_%s_RH_in.ccd \n' %(Climate_pos['value'][int(design_grid[i][j])], str(int(design_grid['Climate_in'][j])+1))
 
     design_files.append(copyfile)
 
