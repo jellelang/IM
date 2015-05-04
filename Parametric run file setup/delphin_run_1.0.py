@@ -59,11 +59,8 @@ basefile_name_rel = 'INPUT1'
 
 
 #ALTERNATIVE GRIDS
-<<<<<<< HEAD
-grid={'var':True,'names':['grid1']}
-=======
+
 grid={'var':True,'names':['grid1','grid2','grid3','grid4','grid5','grid6','grid7','grid8','grid9','grid10']}
->>>>>>> 26872a5b37f1ba8f45f622318820e537163ea49c
 
 #CLIMATES: moet eigenlijk steeds op True staan, want je moet altijd een klimaat maken
 Climate_n={'value':[0.5,1.5],'dist':'design','var':True} 
@@ -80,13 +77,8 @@ Climate_columns=['m', 'd', 'h','T_ex','RH_ex','G_gh','FF','DD','RAIN','RAD','CC'
 # MATERIAL 1
 # BASIC PARAMETERS
 name1='WIND_BARRIER'
-<<<<<<< HEAD
-MEW1={'value':[5.0,10.0,20.0,40.0,80.0],'dist':'design','var':False}            
-LAMBDA1={'value':[0.05,0.1,0.2],'dist':'design','var':False} # [0.05,0.1,0.2]    
-=======
 MEW1={'value':[2.0,5.0,20.0,40.0,80.0],'dist':'design','var':True}            
 LAMBDA1={'value':[0.05,0.1,0.2],'dist':'design','var':True} # [0.05,0.1,0.2]    
->>>>>>> 26872a5b37f1ba8f45f622318820e537163ea49c
 KG1={'value':[0.05,0.1,0.2],'dist':'design','var':False}    
 # MATERIAL FUNCTIONS
 MRC=range(4)
