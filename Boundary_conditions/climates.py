@@ -133,6 +133,8 @@ def VP_i(indoor_par,T_ex,RH_ex):
 #        % HIR: hygric inertia response  
 
 
+    #opletten stukje overschreven om klimaat klasse te kunnen gebruiken
+
     n=indoor_par[0]
     V=indoor_par[1]
     T_in=(indoor_par[2]+273.15)*np.ones(8760)    
@@ -172,6 +174,22 @@ def VP_i(indoor_par,T_ex,RH_ex):
             PV_in[i]=PV_ex[i]
         elif PV_in[i]>vp(T_in[i]-273.15,100):
             PV_in[i]=0.995*vp(T_in[i]-273.15,100)
+            
+            
+            
+    #oppassen stukje bijgeschreven om klimaat klasse te gebruiken!!            
+          
+    for i in uur[1:8760]:
+        if T_ex[i]<273.15:
+            PV_in[i]=PV_ex[i]+550
+        if T_ex[i]>273.15 and T_ex[i]<293.15:
+            PV_in[i]=PV_ex[i]+550*(293.15-T_ex[i])/20
+        if T_ex[i]>293.15:
+            PV_in[i]=PV_ex[i]
+        if PV_in[i]>vp(T_in[i]-273.15,100):
+            PV_in[i]=0.995*vp(T_in[i]-273.15,100)          
+         
+            
     return PV_in
     
     
