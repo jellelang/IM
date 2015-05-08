@@ -144,6 +144,8 @@ def VP_i(indoor_par,T_ex,RH_ex):
     EN=indoor_par[5]
     EN_class=indoor_par[6]
 
+    TV=indoor_par[7]
+    TV_class=indoor_par[]
 
     # waarden gebruikt in doctoraat
     # n=0.5 of 0.15 #zie Limb,2001 (75-150 m³/h) is al weinig, normaal minium 75 m³/h in belgië
@@ -194,7 +196,27 @@ def VP_i(indoor_par,T_ex,RH_ex):
                 PV_in[i]=PV_ex[i]
             if PV_in[i]>vp(T_in[i]-273.15,100):
                 PV_in[i]=0.995*vp(T_in[i]-273.15,100)          
-            
+     
+    #TV
+    if TV==True:   
+        if TV_class==2.0:
+            max_vp=436
+            for i in uur[1:8760]:
+                if T_ex[i]<(273.15+15.9):
+                    PV_in[i]=PV_ex[i]+(max_vp-(T_ex[i]-273.15)*10)
+                if T_ex[i]>(273.15+15.9):
+                    PV_in[i]=PV_ex[i]
+                if PV_in[i]>vp(T_in[i]-273.15,100):
+                    PV_in[i]=0.995*vp(T_in[i]-273.15,100) 
+        if TV_class==3.0:
+            max_vp=713        
+            for i in uur[1:8760]:
+                if T_ex[i]<(273.15+15.9):
+                    PV_in[i]=PV_ex[i]+(max_vp-(T_ex[i]-273.15)*10)
+                if T_ex[i]>(273.15+15.9):
+                    PV_in[i]=PV_ex[i]
+                if PV_in[i]>vp(T_in[i]-273.15,100):
+                    PV_in[i]=0.995*vp(T_in[i]-273.15,100)   
     return PV_in
     
     

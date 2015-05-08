@@ -63,13 +63,14 @@ basefile_name_rel = 'INPUT1'
 grid={'var':True,'names':['grid1','grid2','grid3','grid4','grid5','grid6','grid7','grid8','grid9','grid10']}
 
 #CLIMATES: moet eigenlijk steeds op True staan, want je moet altijd een klimaat maken
-Climate_EN={'value':3.0,'var':True}  #ISO 13788:2001    class 3: low occupancy, class 4: high occupancy
+Climate_EN={'value':3.0,'var':False}  #ISO 13788:2001    class 3: low occupancy, class 4: high occupancy
+Climate_TV={'value':3.0,'var':True}  #ISO 13788:2001    class 3: low occupancy, class 4: high occupancy
 Climate_n={'value':[0.5,1.5],'dist':'design','var':True} 
 Climate_V={'value':[50.0],'dist':'design','var':True} 
 Climate_T={'value':[20.0],'dist':'design','var':True} 
 Climate_HIR={'value':[0.0015],'dist':'design','var':True} 
 Climate_moistprod={'value':[0.12],'dist':'design','var':True} #het is enkel de piekwaarde die je op deze manier meegeeft 
-Climate_pos={'value':['Uccle-hour_N','Uccle-hour_S'],'dist':'design','var':True}
+Climate_pos={'value':['Uccle-hour_N'],'dist':'design','var':True}
 Climate_path=path3+'/'
 Climate_columns=['m', 'd', 'h','T_ex','RH_ex','G_gh','FF','DD','RAIN','RAD','CC']
 
@@ -192,7 +193,7 @@ for i in Climate_pos['value']:
     climates.write_outdoor_ccd(base_dir,climate_out,i)  
     for j in design_grid_climate.index:
         num_cl=num_cl+1
-        indoor_par=[design_grid_climate['n'][j],design_grid_climate['V'][j],design_grid_climate['T'][j],design_grid_climate['HIR'][j],design_grid_climate['Moistprod'][j],Climate_EN['var'],Climate_EN['value']]
+        indoor_par=[design_grid_climate['n'][j],design_grid_climate['V'][j],design_grid_climate['T'][j],design_grid_climate['HIR'][j],design_grid_climate['Moistprod'][j],Climate_EN['var'],Climate_EN['value'],,Climate_TV['var'],Climate_TV['value']]
         climate_in=climates.construct_in_ccd(climate_data,indoor_par)
         climates.write_indoor_ccd(base_dir,climate_in,i+'_'+str(num_cl),indoor_par)  
    

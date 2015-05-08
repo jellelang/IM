@@ -2,6 +2,7 @@
 
 
 $ cd c:/postdoc/python/IM (naar juiste directory gaan)
+$ cd c:/JELLE/IM (naar juiste directory gaan)
 
 
 $ git status  (status checken)
