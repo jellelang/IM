@@ -27,8 +27,8 @@ path='C:/Program Files (x86)/MiKTeX 2.9/miktex/bin'
 sys.path.append(path)
 
 
-basefile_name = 'F:/4/INPUT1' 
-basefile= 'F:/4/'
+basefile_name = 'F:/5/INPUT1' 
+basefile= 'F:/5/'
 
 #INLEZEN VAN DE SIMULATIEGRID FILE
 design_file=basefile+'INPUT1_designs.txt'
@@ -141,22 +141,22 @@ y=[]
 
 
 for i in range(len(design_grid)):
-    if design_grid['grid'][i]==8 :
+    if design_grid['grid'][i]==0 :
        pos_MRC0.append(True)
        pos_MRC1.append(False)
        pos_MRC2.append(False)
        pos_MRC3.append(False)
-    elif design_grid['grid'][i]==5:
+    elif design_grid['grid'][i]==1:
        pos_MRC0.append(False)
        pos_MRC1.append(True)
        pos_MRC2.append(False)
        pos_MRC3.append(False)
-    elif design_grid['grid'][i]==6:
+    elif design_grid['grid'][i]==2:
        pos_MRC0.append(False)
        pos_MRC1.append(False)
        pos_MRC2.append(True)
        pos_MRC3.append(False)
-    elif design_grid['grid'][i]==7: 
+    elif design_grid['grid'][i]==3: 
        pos_MRC0.append(False)
        pos_MRC1.append(False)
        pos_MRC2.append(False)
@@ -210,7 +210,7 @@ plt.rc('font', family='sans-serif')
 font = {'fontname':'Arial', 'size':'20', 'color':'black', 'weight':'normal'}
 font1 = {'fontname':'Arial', 'size':'16', 'color':'black', 'weight':'normal'}
 
-v = np.linspace(0.01, 0.2, 100, endpoint=True)
+v = np.linspace(0.01, 0.201, 100, endpoint=True)
 
 
 gs1 = gridspec.GridSpec(2,1)
