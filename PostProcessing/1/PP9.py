@@ -27,8 +27,8 @@ import sys
 path='C:/Program Files (x86)/MiKTeX 2.9/miktex/bin'
 sys.path.append(path)
 
-basefile_name = 'C:/JELLE/PARAMETRIC/8/INPUT1' 
-basefile= 'C:/JELLE/PARAMETRIC/8/'
+basefile_name = 'C:/JELLE/PARAMETRIC/7/INPUT1' 
+basefile= 'C:/JELLE/PARAMETRIC/7/'
 
 #INLEZEN VAN DE SIMULATIEGRID FILE
 design_file=basefile+'INPUT1_designs.txt'
