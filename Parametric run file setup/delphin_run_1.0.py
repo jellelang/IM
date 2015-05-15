@@ -64,7 +64,7 @@ grid={'var':True,'names':['grid1','grid2','grid3','grid4','grid5','grid6','grid7
 
 #CLIMATES: moet eigenlijk steeds op True staan, want je moet altijd een klimaat maken
 Climate_EN={'value':3.0,'var':False}  #ISO 13788:2001    class 3: low occupancy, class 4: high occupancy
-Climate_TV={'value':3.0,'var':True}  #ISO 13788:2001    class 3: low occupancy, class 4: high occupancy
+Climate_TV={'value':2.0,'var':True}  #ISO 13788:2001    class 3: low occupancy, class 4: high occupancy
 Climate_n={'value':[0.5,1.5],'dist':'design','var':True} 
 Climate_V={'value':[50.0],'dist':'design','var':True} 
 Climate_T={'value':[20.0],'dist':'design','var':True} 
