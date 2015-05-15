@@ -53,8 +53,8 @@ import subprocess
 ###############################################################################
 
 #BASEFILE 
-base_dir = direct_sim+'/PARAMETRIC/6' 
-basefile_name = direct_sim+'/PARAMETRIC/6/INPUT1' 
+base_dir = direct_sim+'/PARAMETRIC/9' 
+basefile_name = direct_sim+'/PARAMETRIC/9/INPUT1' 
 basefile_name_rel = 'INPUT1'
 
 
@@ -64,8 +64,8 @@ grid={'var':True,'names':['grid1','grid2','grid3','grid4','grid5','grid6','grid7
 
 #CLIMATES: moet eigenlijk steeds op True staan, want je moet altijd een klimaat maken
 Climate_EN={'value':3.0,'var':False}  #ISO 13788:2001    class 3: low occupancy, class 4: high occupancy
-Climate_TV={'value':3.0,'var':True}  #ISO 13788:2001    class 3: low occupancy, class 4: high occupancy
-Climate_n={'value':[0.5,1.5],'dist':'design','var':True} 
+Climate_TV={'value':1.0,'var':True}  #ISO 13788:2001    class 3: low occupancy, class 4: high occupancy
+Climate_n={'value':[0.5],'dist':'design','var':True} 
 Climate_V={'value':[50.0],'dist':'design','var':True} 
 Climate_T={'value':[20.0],'dist':'design','var':True} 
 Climate_HIR={'value':[0.0015],'dist':'design','var':True} 
@@ -193,7 +193,7 @@ for i in Climate_pos['value']:
     climates.write_outdoor_ccd(base_dir,climate_out,i)  
     for j in design_grid_climate.index:
         num_cl=num_cl+1
-        indoor_par=[design_grid_climate['n'][j],design_grid_climate['V'][j],design_grid_climate['T'][j],design_grid_climate['HIR'][j],design_grid_climate['Moistprod'][j],Climate_EN['var'],Climate_EN['value'],,Climate_TV['var'],Climate_TV['value']]
+        indoor_par=[design_grid_climate['n'][j],design_grid_climate['V'][j],design_grid_climate['T'][j],design_grid_climate['HIR'][j],design_grid_climate['Moistprod'][j],Climate_EN['var'],Climate_EN['value'],Climate_TV['var'],Climate_TV['value']]
         climate_in=climates.construct_in_ccd(climate_data,indoor_par)
         climates.write_indoor_ccd(base_dir,climate_in,i+'_'+str(num_cl),indoor_par)  
    
