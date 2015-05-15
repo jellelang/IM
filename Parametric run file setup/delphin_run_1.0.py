@@ -53,8 +53,13 @@ import subprocess
 ###############################################################################
 
 #BASEFILE 
+<<<<<<< HEAD
 base_dir = direct_sim+'/PARAMETRIC/9' 
 basefile_name = direct_sim+'/PARAMETRIC/9/INPUT1' 
+=======
+base_dir = direct_sim+'/PARAMETRIC/8' 
+basefile_name = direct_sim+'/PARAMETRIC/8/INPUT1' 
+>>>>>>> 30d40038c0754c12637ad1b9422a77f9e2c96623
 basefile_name_rel = 'INPUT1'
 
 
@@ -64,8 +69,13 @@ grid={'var':True,'names':['grid1','grid2','grid3','grid4','grid5','grid6','grid7
 
 #CLIMATES: moet eigenlijk steeds op True staan, want je moet altijd een klimaat maken
 Climate_EN={'value':3.0,'var':False}  #ISO 13788:2001    class 3: low occupancy, class 4: high occupancy
+<<<<<<< HEAD
 Climate_TV={'value':1.0,'var':True}  #ISO 13788:2001    class 3: low occupancy, class 4: high occupancy
 Climate_n={'value':[0.5],'dist':'design','var':True} 
+=======
+Climate_TV={'value':2.0,'var':True}  #ISO 13788:2001    class 3: low occupancy, class 4: high occupancy
+Climate_n={'value':[0.5,1.5],'dist':'design','var':True} 
+>>>>>>> 30d40038c0754c12637ad1b9422a77f9e2c96623
 Climate_V={'value':[50.0],'dist':'design','var':True} 
 Climate_T={'value':[20.0],'dist':'design','var':True} 
 Climate_HIR={'value':[0.0015],'dist':'design','var':True} 
