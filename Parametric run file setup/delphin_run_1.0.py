@@ -54,7 +54,10 @@ import subprocess
 ###############################################################################
 
 #BASEFILE 
+<<<<<<< HEAD
+=======
 
+>>>>>>> bb896cbb493345aaaa50ad4980eabbd96d5eff24
 base_dir = direct_sim+'/PARAMETRIC/9' 
 basefile_name = direct_sim+'/PARAMETRIC/9/INPUT1' 
 basefile_name_rel = 'INPUT1'
