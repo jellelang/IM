@@ -20,16 +20,15 @@ import matplotlib.cm as cm
 import matplotlib.mlab as mlab
 import scipy.ndimage
 from pylab import meshgrid,cm,imshow,contour,clabel,colorbar,axis,title,show
-sys.path.append('C:/PostDoc/Python/IM/PostProcessing')
+sys.path.append('C:/JELLE/IM/PostProcessing')
 import mould
 from matplotlib import gridspec
 import sys
 path='C:/Program Files (x86)/MiKTeX 2.9/miktex/bin'
 sys.path.append(path)
 
-
-basefile_name = 'F:/4/INPUT1' 
-basefile= 'F:/4/'
+basefile_name = 'C:/JELLE/PARAMETRIC/8/INPUT1' 
+basefile= 'C:/JELLE/PARAMETRIC/8/'
 
 #INLEZEN VAN DE SIMULATIEGRID FILE
 design_file=basefile+'INPUT1_designs.txt'
@@ -418,8 +417,7 @@ cbar.set_label('Moisture content (kg/kg)', alpha=a,
 cbarytks = plt.getp(cbar.ax.axes, 'yticklines')
 plt.setp(cbarytks, visible=False)
 
-fig1.savefig('C:/Users/jelle/Desktop/overzicht_4_MC_test.png',dpi=400)
-
+fig1.savefig('C:/Users/IM/Desktop/overzicht_4_MC_test.png',dpi=400)
 
 
 
