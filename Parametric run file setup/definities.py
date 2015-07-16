@@ -65,9 +65,27 @@ def material_lines(Material_in,basefile):
         if (i == '  [MATERIAL]\n') | (i =='[CONDITIONS]\n'):
             print('ERROR !!! KG of %s not found' %Material_in)        
             break
+# Look for line OEFF        
+    line_OEFF=line_material-1
+    for i in basefile[line_material:] :       
+        line_OEFF=line_OEFF+1
+        if i[:10] == '      OEFF':
+            break 
+        if (i == '  [MATERIAL]\n') | (i =='[CONDITIONS]\n'):
+            print('ERROR !!! OEFF of %s not found' %Material_in)        
+            break   
+# Look for line AW       
+    line_AW=line_material-1
+    for i in basefile[line_material:] :       
+        line_AW=line_AW+1
+        if i[:8] == '      AW':
+            break 
+        if (i == '  [MATERIAL]\n') | (i =='[CONDITIONS]\n'):
+            print('ERROR !!! AW of %s not found' %Material_in)        
+            break  
     line_MRC=line_MRC+1 #dan zit op de juiste plaats
-    ind=['LAMBDA_'+Material_in, 'MEW_'+Material_in, 'KG_'+Material_in,'MRC_'+Material_in]
-    lines=Series([line_LAMBDA, line_MEW,line_KG,line_MRC], index=ind)
+    ind=['LAMBDA_'+Material_in, 'MEW_'+Material_in, 'KG_'+Material_in,'MRC_'+Material_in,'OEFF_'+Material_in,'AW_'+Material_in]
+    lines=Series([line_LAMBDA, line_MEW,line_KG,line_MRC,line_OEFF,line_AW], index=ind)
     return lines    
     
     

@@ -2,7 +2,7 @@
 """
 Created on Tue Oct 14 10:33:09 2014
 
-Color plots condensatie, R en sd waarde: voor reeks 4 (eerste stap richting charts)
+CHARTS: Color plots condensation, R en sd waarde
 
 @author: jelle
 """
@@ -27,9 +27,8 @@ import sys
 path='C:/Program Files (x86)/MiKTeX 2.9/miktex/bin'
 sys.path.append(path)
 
-
-basefile_name = 'F:/4/INPUT1' 
-basefile= 'F:/4/'
+basefile_name = 'F:/8/ INPUT1'#bij 8 een spatie voor input 
+basefile= 'F:/8/'
 
 #INLEZEN VAN DE SIMULATIEGRID FILE
 design_file=basefile+'INPUT1_designs.txt'
@@ -175,6 +174,19 @@ for i in range(len(design_grid)):
                 data=data1*0.005+data2*0.00526+data3*0.00526+data4*0.00526
 
 
+            if design_grid['grid'][i]==10:
+                data1=pd.read_csv(output_filename_cav,skiprows=range(8884), header=None,sep='\s+')
+                data2=pd.read_csv(output_filename_mw1,skiprows=range(8884), header=None,sep='\s+')
+                data3=pd.read_csv(output_filename_mw2,skiprows=range(8884), header=None,sep='\s+')
+                data4=pd.read_csv(output_filename_mw3,skiprows=range(8884), header=None,sep='\s+')
+                data1=data1.drop(data1.columns[[0]], axis=1)
+                data2=data1.drop(data1.columns[[0]], axis=1)
+                data3=data1.drop(data1.columns[[0]], axis=1)
+                data4=data1.drop(data1.columns[[0]], axis=1)
+                data=data1*0.005+data2*0.00526+data3*0.00526+data4*0.00526
+
+
+
             if design_grid['grid'][i]!=0:
                 data = data.max(axis=1)
                 maxx=data.max()
@@ -289,7 +301,7 @@ c6=[]
 c7=[]
 c8=[]
 c9=[]
-
+c10=[]
 
 for i in range(len(design_grid)):
     if pos_grid0[i]==True:
@@ -312,10 +324,25 @@ for i in range(len(design_grid)):
         c8.append(max_condens[i])
     if pos_grid8[i]==True:
         c9.append(max_condens[i])
+    if pos_grid9[i]==True:
+        c10.append(max_condens[i])
 
 
+sdsd = {'Duripanel': [45,36,31,27],
+'Hydropanel': [44,23,16,11],
+'Mensui_1': [63,46,37,28],
+'Mensui_2': [83,64,55,47],
+'windshield': [181,165,157,149],
+'weatherdefence': [11,9.9,9.5,9]}
+sd_mat = pd.DataFrame(sdsd,index=['80', '90', '95', '100'])
 
-
+lambdalambda = {'Duripanel': [0.2,0.2,0.2,0.2],
+'Hydropanel': [0.2,0.2,0.2,0.2],
+'Mensui_1': [0.2,0.2,0.2,0.2],
+'Mensui_2': [0.2,0.2,0.2,0.2],
+'windshield': [0.2,0.2,0.2,0.2],
+'weatherdefence': [0.2,0.2,0.2,0.2]}
+lambda_mat = pd.DataFrame(lambdalambda,index=['80', '90', '95', '100'])
 
 
 fig1 = plt.figure(figsize=(12, 20)) 
@@ -328,7 +355,7 @@ v = np.linspace(0, 1, 100, endpoint=True)
 
 
 gs1 = gridspec.GridSpec(5,2)
-gs1.update(top=0.9, bottom=0.1,left=0.1, right=0.9, wspace=0.55, hspace=0.55)   # wspace boven elkaar, hspace is naast elkaar
+gs1.update(top=0.97, bottom=0.2,left=0.1, right=0.9, wspace=0.55, hspace=0.55)   # wspace boven elkaar, hspace is naast elkaar
 
 ax1 = plt.subplot(gs1[0:1, 0])
 xx=pd.Series(x)
@@ -342,13 +369,20 @@ CS = plt.contourf(X,Y,VAL,v,origin='lower')
 CS2 = plt.contour(CS,v, levels=[0.5],colors = 'r',origin='lower',hold='on')
 clabel(CS2,inline=True,fmt='%1.1f',fontsize=20,levels=[0.2],colors = 'r')
 #CS=ax1.tricontourf(x,y,c1, v)
-ax1.plot(x,y, 'ko ')
 ylabel('R (K/m2/W)', **font)
 xlabel('sd (-)',**font)
 xx=[0,0.3,0.6,0.9,1.2,1.5]
 plt.xticks(xx,list(xx),**font)  
 yy=[0,0.1,0.2,0.4]
 plt.yticks(yy,list(yy),**font)  
+
+ax1.plot(0.018*sd_mat['Duripanel']['95'],0.018/lambda_mat['Duripanel']['90'], 'go ')
+ax1.plot(0.018*sd_mat['Hydropanel']['95'],0.018/lambda_mat['Hydropanel']['90'], 'wo ')
+ax1.plot(0.003*sd_mat['Mensui_1']['95'],0.003/lambda_mat['Mensui_1']['90'], 'ro ')
+ax1.plot(0.004*sd_mat['Mensui_2']['95'],0.004/lambda_mat['Mensui_1']['90'], 'ro ')
+ax1.plot(0.006*sd_mat['windshield']['95'],0.006/lambda_mat['windshield']['90'], 'ko ')
+ax1.plot(0.009*sd_mat['weatherdefence']['95'],0.009/lambda_mat['weatherdefence']['90'], 'mo ')
+
 
 
 ax2 = plt.subplot(gs1[1:2, 0])
@@ -363,7 +397,6 @@ CS = plt.contourf(X,Y,VAL,v,origin='lower')
 CS2 = plt.contour(CS,v, levels=[0.5],colors = 'r',origin='lower',hold='on')
 clabel(CS2,inline=True,fmt='%1.1f',fontsize=20,levels=[0.2],colors = 'r')
 #CS=ax1.tricontourf(x,y,c1, v)
-ax2.plot(x,y, 'ko ')
 ylabel('R (K/m2/W)', **font)
 xlabel('sd (-)',**font)
 xx=[0,0.3,0.6,0.9,1.2,1.5]
@@ -371,6 +404,17 @@ plt.xticks(xx,list(xx),**font)
 yy=[0,0.1,0.2,0.4]
 plt.yticks(yy,list(yy),**font)  
 max_condens
+
+ax2.plot(0.018*sd_mat['Duripanel']['95'],0.018/lambda_mat['Duripanel']['90'], 'go ')
+ax2.plot(0.018*sd_mat['Hydropanel']['95'],0.018/lambda_mat['Hydropanel']['90'], 'wo ')
+ax2.plot(0.003*sd_mat['Mensui_1']['95'],0.003/lambda_mat['Mensui_1']['90'], 'ro ')
+ax2.plot(0.004*sd_mat['Mensui_2']['95'],0.004/lambda_mat['Mensui_1']['90'], 'ro ')
+ax2.plot(0.006*sd_mat['windshield']['95'],0.006/lambda_mat['windshield']['90'], 'ko ')
+ax2.plot(0.009*sd_mat['weatherdefence']['95'],0.009/lambda_mat['weatherdefence']['90'], 'mo ')
+
+
+
+
 
 ax3 = plt.subplot(gs1[2:3, 0])
 xx=pd.Series(x)
@@ -384,13 +428,22 @@ CS = plt.contourf(X,Y,VAL,v,origin='lower')
 CS2 = plt.contour(CS,v, levels=[0.5],colors = 'r',origin='lower',hold='on')
 clabel(CS2,inline=True,fmt='%1.1f',fontsize=20,levels=[0.2],colors = 'r')
 #CS=ax1.tricontourf(x,y,c1, v)
-ax3.plot(x,y, 'ko ')
 ylabel('R (K/m2/W)', **font)
 xlabel('sd (-)',**font)
 xx=[0,0.3,0.6,0.9,1.2,1.5]
 plt.xticks(xx,list(xx),**font)  
 yy=[0,0.1,0.2,0.4]
 plt.yticks(yy,list(yy),**font)  
+
+ax3.plot(0.018*sd_mat['Duripanel']['95'],0.018/lambda_mat['Duripanel']['90'], 'go ')
+ax3.plot(0.018*sd_mat['Hydropanel']['95'],0.018/lambda_mat['Hydropanel']['90'], 'wo ')
+ax3.plot(0.003*sd_mat['Mensui_1']['95'],0.003/lambda_mat['Mensui_1']['90'], 'ro ')
+ax3.plot(0.004*sd_mat['Mensui_2']['95'],0.004/lambda_mat['Mensui_1']['90'], 'ro ')
+ax3.plot(0.006*sd_mat['windshield']['95'],0.006/lambda_mat['windshield']['90'], 'ko ')
+ax3.plot(0.009*sd_mat['weatherdefence']['95'],0.009/lambda_mat['weatherdefence']['90'], 'mo ')
+
+
+
 
 ax4 = plt.subplot(gs1[3:4, 0])
 xx=pd.Series(x)
@@ -404,13 +457,23 @@ CS = plt.contourf(X,Y,VAL,v,origin='lower')
 CS2 = plt.contour(CS,v, levels=[0.5],colors = 'r',origin='lower',hold='on')
 clabel(CS2,inline=True,fmt='%1.1f',fontsize=20,levels=[0.2],colors = 'r')
 #CS=ax1.tricontourf(x,y,c1, v)
-ax4.plot(x,y, 'ko ')
 ylabel('R (K/m2/W)', **font)
 xlabel('sd (-)',**font)
 xx=[0,0.3,0.6,0.9,1.2,1.5]
 plt.xticks(xx,list(xx),**font)  
 yy=[0,0.1,0.2,0.4]
 plt.yticks(yy,list(yy),**font)  
+
+ax4.plot(0.018*sd_mat['Duripanel']['95'],0.018/lambda_mat['Duripanel']['90'], 'go ')
+ax4.plot(0.018*sd_mat['Hydropanel']['95'],0.018/lambda_mat['Hydropanel']['90'], 'wo ')
+ax4.plot(0.003*sd_mat['Mensui_1']['95'],0.003/lambda_mat['Mensui_1']['90'], 'ro ')
+ax4.plot(0.004*sd_mat['Mensui_2']['95'],0.004/lambda_mat['Mensui_1']['90'], 'ro ')
+ax4.plot(0.006*sd_mat['windshield']['95'],0.006/lambda_mat['windshield']['90'], 'ko ')
+ax4.plot(0.009*sd_mat['weatherdefence']['95'],0.009/lambda_mat['weatherdefence']['90'], 'mo ')
+
+
+
+
 
 ax5 = plt.subplot(gs1[4:5, 0])
 xx=pd.Series(x)
@@ -424,13 +487,19 @@ CS = plt.contourf(X,Y,VAL,v,origin='lower')
 CS2 = plt.contour(CS,v, levels=[0.5],colors = 'r',origin='lower',hold='on')
 clabel(CS2,inline=True,fmt='%1.1f',fontsize=20,levels=[0.2],colors = 'r')
 #CS=ax1.tricontourf(x,y,c1, v)
-ax5.plot(x,y, 'ko ')
 ylabel('R (K/m2/W)', **font)
 xlabel('sd (-)',**font)
 xx=[0,0.3,0.6,0.9,1.2,1.5]
 plt.xticks(xx,list(xx),**font)  
 yy=[0,0.1,0.2,0.4]
 plt.yticks(yy,list(yy),**font)  
+
+ax5.plot(0.018*sd_mat['Duripanel']['95'],0.018/lambda_mat['Duripanel']['90'], 'go ')
+ax5.plot(0.018*sd_mat['Hydropanel']['95'],0.018/lambda_mat['Hydropanel']['90'], 'wo ')
+ax5.plot(0.003*sd_mat['Mensui_1']['95'],0.003/lambda_mat['Mensui_1']['90'], 'ro ')
+ax5.plot(0.004*sd_mat['Mensui_2']['95'],0.004/lambda_mat['Mensui_1']['90'], 'ro ')
+ax5.plot(0.006*sd_mat['windshield']['95'],0.006/lambda_mat['windshield']['90'], 'ko ')
+ax5.plot(0.009*sd_mat['weatherdefence']['95'],0.009/lambda_mat['weatherdefence']['90'], 'mo ')
 
 
 ax6 = plt.subplot(gs1[0:1, 1])
@@ -445,13 +514,20 @@ CS = plt.contourf(X,Y,VAL,v,origin='lower')
 CS2 = plt.contour(CS,v, levels=[0.5],colors = 'r',origin='lower',hold='on')
 clabel(CS2,inline=True,fmt='%1.1f',fontsize=20,levels=[0.2],colors = 'r')
 #CS=ax1.tricontourf(x,y,c1, v)
-ax6.plot(x,y, 'ko ')
 ylabel('R (K/m2/W)', **font)
 xlabel('sd (-)',**font)
 xx=[0,0.3,0.6,0.9,1.2,1.5]
 plt.xticks(xx,list(xx),**font)  
 yy=[0,0.1,0.2,0.4]
 plt.yticks(yy,list(yy),**font) 
+
+ax6.plot(0.018*sd_mat['Duripanel']['95'],0.018/lambda_mat['Duripanel']['90'], 'go ')
+ax6.plot(0.018*sd_mat['Hydropanel']['95'],0.018/lambda_mat['Hydropanel']['90'], 'wo ')
+ax6.plot(0.003*sd_mat['Mensui_1']['95'],0.003/lambda_mat['Mensui_1']['90'], 'ro ')
+ax6.plot(0.004*sd_mat['Mensui_2']['95'],0.004/lambda_mat['Mensui_1']['90'], 'ro ')
+ax6.plot(0.006*sd_mat['windshield']['95'],0.006/lambda_mat['windshield']['90'], 'ko ')
+ax6.plot(0.009*sd_mat['weatherdefence']['95'],0.009/lambda_mat['weatherdefence']['90'], 'mo ')
+
 
 ax7 = plt.subplot(gs1[1:2, 1])
 xx=pd.Series(x)
@@ -465,13 +541,21 @@ CS = plt.contourf(X,Y,VAL,v,origin='lower')
 CS2 = plt.contour(CS,v, levels=[0.5],colors = 'r',origin='lower',hold='on')
 clabel(CS2,inline=True,fmt='%1.1f',fontsize=20,levels=[0.2],colors = 'r')
 #CS=ax1.tricontourf(x,y,c1, v)
-ax7.plot(x,y, 'ko ')
 ylabel('R (K/m2/W)', **font)
 xlabel('sd (-)',**font)
 xx=[0,0.3,0.6,0.9,1.2,1.5]
 plt.xticks(xx,list(xx),**font)  
 yy=[0,0.1,0.2,0.4]
 plt.yticks(yy,list(yy),**font) 
+
+ax7.plot(0.018*sd_mat['Duripanel']['95'],0.018/lambda_mat['Duripanel']['90'], 'go ')
+ax7.plot(0.018*sd_mat['Hydropanel']['95'],0.018/lambda_mat['Hydropanel']['90'], 'wo ')
+ax7.plot(0.003*sd_mat['Mensui_1']['95'],0.003/lambda_mat['Mensui_1']['90'], 'ro ')
+ax7.plot(0.004*sd_mat['Mensui_2']['95'],0.004/lambda_mat['Mensui_1']['90'], 'ro ')
+ax7.plot(0.006*sd_mat['windshield']['95'],0.006/lambda_mat['windshield']['90'], 'ko ')
+ax7.plot(0.009*sd_mat['weatherdefence']['95'],0.009/lambda_mat['weatherdefence']['90'], 'mo ')
+
+
 
 ax8 = plt.subplot(gs1[2:3, 1])
 xx=pd.Series(x)
@@ -485,13 +569,22 @@ CS = plt.contourf(X,Y,VAL,v,origin='lower')
 CS2 = plt.contour(CS,v, levels=[0.5],colors = 'r',origin='lower',hold='on')
 clabel(CS2,inline=True,fmt='%1.1f',fontsize=20,levels=[0.2],colors = 'r')
 #CS=ax1.tricontourf(x,y,c1, v)
-ax8.plot(x,y, 'ko ')
 ylabel('R (K/m2/W)', **font)
 xlabel('sd (-)',**font)
 xx=[0,0.3,0.6,0.9,1.2,1.5]
 plt.xticks(xx,list(xx),**font)  
 yy=[0,0.1,0.2,0.4]
 plt.yticks(yy,list(yy),**font) 
+
+ax8.plot(0.018*sd_mat['Duripanel']['95'],0.018/lambda_mat['Duripanel']['90'], 'go ')
+ax8.plot(0.018*sd_mat['Hydropanel']['95'],0.018/lambda_mat['Hydropanel']['90'], 'wo ')
+ax8.plot(0.003*sd_mat['Mensui_1']['95'],0.003/lambda_mat['Mensui_1']['90'], 'ro ')
+ax8.plot(0.004*sd_mat['Mensui_2']['95'],0.004/lambda_mat['Mensui_1']['90'], 'ro ')
+ax8.plot(0.006*sd_mat['windshield']['95'],0.006/lambda_mat['windshield']['90'], 'ko ')
+ax8.plot(0.009*sd_mat['weatherdefence']['95'],0.009/lambda_mat['weatherdefence']['90'], 'mo ')
+
+
+
 
 ax9 = plt.subplot(gs1[3:4, 1])
 xx=pd.Series(x)
@@ -505,7 +598,37 @@ CS = plt.contourf(X,Y,VAL,v,origin='lower')
 CS2 = plt.contour(CS,v, levels=[0.5],colors = 'r',origin='lower',hold='on')
 clabel(CS2,inline=True,fmt='%1.1f',fontsize=20,levels=[0.2],colors = 'r')
 #CS=ax1.tricontourf(x,y,c1, v)
-ax9.plot(x,y, 'ko ')
+ylabel('R (K/m2/W)', **font)
+xlabel('sd (-)',**font)
+xx=[0,0.3,0.6,0.9,1.2,1.5]
+plt.xticks(xx,list(xx),**font)  
+yy=[0,0.1,0.2,0.4]
+plt.yticks(yy,list(yy),**font)
+xx=[0,0.3,0.6,0.9,1.2,1.5]
+plt.xticks(xx,list(xx),**font)  
+yy=[0,0.1,0.2,0.4]
+plt.yticks(yy,list(yy),**font)
+
+ax9.plot(0.018*sd_mat['Duripanel']['95'],0.018/lambda_mat['Duripanel']['90'], 'go ')
+ax9.plot(0.018*sd_mat['Hydropanel']['95'],0.018/lambda_mat['Hydropanel']['90'], 'wo ')
+ax9.plot(0.003*sd_mat['Mensui_1']['95'],0.003/lambda_mat['Mensui_1']['90'], 'ro ')
+ax9.plot(0.004*sd_mat['Mensui_2']['95'],0.004/lambda_mat['Mensui_1']['90'], 'ro ')
+ax9.plot(0.006*sd_mat['windshield']['95'],0.006/lambda_mat['windshield']['90'], 'ko ')
+ax9.plot(0.009*sd_mat['weatherdefence']['95'],0.009/lambda_mat['weatherdefence']['90'], 'mo ')
+
+
+ax10 = plt.subplot(gs1[4:5, 1])
+xx=pd.Series(x)
+yy=pd.Series(y)
+c1=pd.Series(c1)
+x_un=xx.unique()
+y_un=yy.unique()
+X,Y=np.meshgrid(x_un,y_un)
+VAL=np.reshape(c10, (len(y_un),len(x_un)),order='F')
+CS = plt.contourf(X,Y,VAL,v,origin='lower')
+CS2 = plt.contour(CS,v, levels=[0.5],colors = 'r',origin='lower',hold='on')
+clabel(CS2,inline=True,fmt='%1.1f',fontsize=20,levels=[0.2],colors = 'r')
+#CS=ax1.tricontourf(x,y,c1, v)
 ylabel('R (K/m2/W)', **font)
 xlabel('sd (-)',**font)
 xx=[0,0.3,0.6,0.9,1.2,1.5]
@@ -513,8 +636,19 @@ plt.xticks(xx,list(xx),**font)
 yy=[0,0.1,0.2,0.4]
 plt.yticks(yy,list(yy),**font)
 
-box = ax9.get_position()
-axColor = plt.axes([0.58, 0.15, box.width, 0.05])
+ax10.plot(0.018*sd_mat['Duripanel']['95'],0.018/lambda_mat['Duripanel']['90'], 'go ')
+ax10.plot(0.018*sd_mat['Hydropanel']['95'],0.018/lambda_mat['Hydropanel']['90'], 'wo ')
+ax10.plot(0.003*sd_mat['Mensui_1']['95'],0.003/lambda_mat['Mensui_1']['90'], 'ro ')
+ax10.plot(0.004*sd_mat['Mensui_2']['95'],0.004/lambda_mat['Mensui_1']['90'], 'ro ')
+ax10.plot(0.006*sd_mat['windshield']['95'],0.006/lambda_mat['windshield']['90'], 'ko ')
+ax10.plot(0.009*sd_mat['weatherdefence']['95'],0.009/lambda_mat['weatherdefence']['90'], 'mo ')
+
+
+
+
+
+box = ax8.get_position()
+axColor = plt.axes([0.34, 0.08, box.width, 0.05])
 
 cbar = plt.colorbar(CS, cax = axColor, orientation="horizontal")
 cbar.solids.set_edgecolor("face")
@@ -528,36 +662,34 @@ cbar.set_label('Condensation level (kg/m2)', alpha=a,
 cbarytks = plt.getp(cbar.ax.axes, 'yticklines')
 plt.setp(cbarytks, visible=False)
 
-fig1.savefig('C:/Users/jelle/Desktop/overzicht_EN4_test.png',dpi=400)
+fig1.savefig('C:/Users/jelle/Desktop/overzicht_tv3_test.png',dpi=400)
 
 
 
 
 
 
-cbar = plt.colorbar(CS, cax = axColor, orientation="horizontal")
-cbar.solids.set_edgecolor("face")
-cbar.outline.set_visible(False)
-cbar.ax.tick_params(labelsize=30)
-mytks = range(0,21,4)
-cbar.set_ticks(mytks)
-cbar.ax.set_yticklabels([str(a) for a in mytks], alpha=a)
-cbar.set_label('Condensation level (kg/m2)', alpha=a, 
-               rotation=0, fontsize=20, labelpad=20)
-cbarytks = plt.getp(cbar.ax.axes, 'yticklines')
-plt.setp(cbarytks, visible=False)
 
 
 
-# create color bar
-box = ax9.get_position()
-# create color bar
-axColor = plt.axes([0.58, 0.15, box.width, 0.05])
-cb=colorbar(CS, cax = axColor, orientation="horizontal",label='condensation level (kg/m2)')
-ax = cb.ax
-text = ax.yaxis.label
-font = matplotlib.font_manager.FontProperties(size=50)
-text.set_font_properties(font)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

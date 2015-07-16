@@ -16,8 +16,8 @@ import  numpy.random as random
 from pandas import Series, DataFrame
 import math
 import sys,os
-direct_py='C:/JELLE' #'C:/PostDoc/SIMULATIES'
-direct_sim='C:/JELLE' #'C:/PostDoc/SIMULATIES'
+direct_py='C:/PostDoc/Python'  #'C:/JELLE' #'C:/PostDoc/SIMULATIES'
+direct_sim='C:/PostDoc/SIMULATIES'  #'C:/JELLE' #'C:/PostDoc/SIMULATIES'
 
 path1=direct_py+ '/IM/Parametric run file setup'
 path2=direct_py+ '/IM/BASICS'
@@ -54,18 +54,24 @@ import subprocess
 
 #BASEFILE 
 
-base_dir = direct_sim+'/PARAMETRIC/9' 
-basefile_name = direct_sim+'/PARAMETRIC/9/INPUT1' 
+base_dir = direct_sim+'/PARAMETRIC/16' 
+basefile_name = direct_sim+'/PARAMETRIC/16/INPUT1' 
 basefile_name_rel = 'INPUT1'
 
 
 #ALTERNATIVE GRIDS
 
-grid={'var':True,'names':['grid1','grid2','grid3','grid4','grid5','grid6','grid7','grid8','grid9','grid10']}
+#aantal grids ingeven
+aantal_grids=2
+grids=[]
+for i in range(1,aantal_grids+1):
+    grids.append('grid'+str(i))
+grid={'var':True,'names':grids}
 
-#CLIMATES: moet eigenlijk steeds op True staan, want je moet altijd een klimaat maken
+
+#CLIMATES: moet eigenlijk steeds op True staan, want je moet altijd een klimaat maken (TV en EN hebben voorrang)
 Climate_EN={'value':2.0,'var':False}  #ISO 13788:2001    class 3: low occupancy, class 4: high occupancy
-Climate_TV={'value':1.0,'var':True}  #ISO 13788:2001    class 3: low occupancy, class 4: high occupancy
+Climate_TV={'value':2.0,'var':True}  #TV215    class 1: low occupancy, class 2: high occupancy  3:zwembad
 Climate_n={'value':[0.5],'dist':'design','var':True} 
 Climate_V={'value':[50.0],'dist':'design','var':True} 
 Climate_T={'value':[20.0],'dist':'design','var':True} 
@@ -80,9 +86,9 @@ Climate_columns=['m', 'd', 'h','T_ex','RH_ex','G_gh','FF','DD','RAIN','RAD','CC'
 # MATERIAL 1
 # BASIC PARAMETERS
 name1='WIND_BARRIER'
-MEW1={'value':[2.0,5.0,20.0,40.0,80.0],'dist':'design','var':True}            
-LAMBDA1={'value':[0.05,0.1,0.2],'dist':'design','var':True} # [0.05,0.1,0.2]    
-KG1={'value':[0.05,0.1,0.2],'dist':'design','var':False}    
+MEW1={'value':[82.0,55.0,41.0,123.0,163.0],'dist':'design','var':True}            
+LAMBDA1={'value':[0.22,0.11,0.44],'dist':'design','var':True}    
+KG1={'value':[0.05],'dist':'design','var':False}    
 # MATERIAL FUNCTIONS
 MRC=range(4)
 grid_obj = open(base_dir+'/MRC.txt', 'r')
@@ -93,7 +99,15 @@ for i in range(int((len(grid_file)-1)/3)):
     MRC[1]=grid_file[i*3+3]
     MRC[2]=i+1
     MRC_all[i]=copy(MRC) #om te vermijden dat je heel de MRC in sommige files moet schrijven
-MRC1={'value':range(len(MRC_all)),'values':MRC_all,'dist':'design','var':False}    
+MRC1={'value':range(len(MRC_all)),'values':MRC_all,'dist':'design','var':True}    
+
+#SPECIAAL GEVAL: GELINKT AAN MRC, DUS NIET APPART ALS ONZEKERHEID
+OEFF=[0.47,0.55,0.42]                      
+         
+AW1={'value':[0.00245,0.00245/2,0.00245*2],'dist':'design','var':True}            
+
+
+
 
 # MATERIAL 2
 name2='MINERALE WOL 20'
@@ -101,19 +115,26 @@ MEW2={'value':[1,2],'dist':'design','var':False}
 LAMBDA2={'min':0.05,'max':0.5,'dist':'uniform','var':False}         
 KG2={'mhu':0.1,'sigma':0.005,'dist':'normal','var':False} 
 MRC2={'value':np.nan,'dist':'design','var':False}    
-       
+OEFF2={'value':[0.55,0.47,0.42],'dist':'design','var':False}            
+AW2={'value':[0.00245,0.00245/2,0.00245*2],'dist':'design','var':False}            
+
+     
+     
+     
 # MATERIAL 3
 name3='OSB Board'
 MEW3={'range':[100,200,300,400],'dist':'discrete','var':False}               
 LAMBDA3={'min':0.05,'max':0.5,'dist':'uniform','var':False}         
 KG3={'min':7.2e-8,'max':7.2e-6,'dist':'uniform','var':False}    
 MRC3={'value':np.nan,'dist':'design','var':False}    
+OEFF3={'value':[0.55,0.47,0.42],'dist':'design','var':False}            
+AW3={'value':[0.00245,0.00245/2,0.00245*2],'dist':'design','var':False}  
 
 
 materials=['one','two','three']
-properties=['NAME','MEW', 'LAMBDA', 'KG','MRC']
+properties=['NAME','MEW', 'LAMBDA', 'KG','MRC','AW']
 
-data=[[name1,name2,name3],[MEW1,MEW2,MEW3],[LAMBDA1,LAMBDA2,LAMBDA3],[KG1,KG2,LAMBDA3],[MRC1,MRC2,MRC3]]
+data=[[name1,name2,name3],[MEW1,MEW2,MEW3],[LAMBDA1,LAMBDA2,LAMBDA3],[KG1,KG2,KG3],[MRC1,MRC2,MRC3],[AW1,AW2,AW3]]
 
 Materials = DataFrame(data, columns=materials,index=properties)
 
@@ -274,7 +295,7 @@ if Climate_moistprod['dist']=='design' and\
 
 
 #CONSTRUCT DATAFRAME WITH ALL DESIGN COMBINATIONS
-design_grid=pd.DataFrame(cartesian(design_value),columns=design_opt)
+design_grid=pd.DataFrame(cartesian(design_value),columns=design_opt, dtype=float)
 Climate_in_grid=pd.DataFrame(cartesian(Climate_in_value),columns=['n','V','T','HIR','moistprod'])
 #HIER MAAK JE EEN EXTRA KOLOM IN DESIGN_GRID OM AAN TE DUIDEN OVER WELK BINNENKLIMAAT HET GAAT
 ind=[]
@@ -321,6 +342,8 @@ for j in design_grid.index:
             copyfile[mat_lines[i]] = '      LAMBDA                   = %g W/mK\n' % design_grid[i][j]
         if i[0:2]=='KG':    
             copyfile[mat_lines[i]] = '      KG                   = %g W/mK\n' % design_grid[i][j]
+        if i[0:2]=='AW':    
+            copyfile[mat_lines[i]] = '      AW                   = %g kg/m2s05\n' % design_grid[i][j]
         if i[0:3]=='MRC':       
             for m in Materials:
                 if i=='MRC_'+Materials[m]['NAME']:
@@ -330,7 +353,21 @@ for j in design_grid.index:
                     pc = reverse('%s' % MRC_local[int(design_grid[i][j])][0])
                     ol = reverse('%s' % MRC_local[int(design_grid[i][j])][1])
                     copyfile[mat_lines[i]+3] =  ol+'\n'
-                    copyfile[mat_lines[i]+4] =  pc      
+                    copyfile[mat_lines[i]+4] =  pc     
+                    
+                    if  design_grid[i][j]==0:
+                        copyfile[mat_lines[4]] = '      OEFF                   = %g m3/m3\n' % OEFF[0]   
+                        copyfile[mat_lines[4]-1] = '      OPOR                   = %g m3/m3\n' % OEFF[0]                    
+
+                    if  design_grid[i][j]==1:
+                        copyfile[mat_lines[4]] = '      OEFF                   = %g m3/m3\n' % OEFF[1]
+                        copyfile[mat_lines[4]-1] = '      OPOR                   = %g m3/m3\n' % OEFF[1]
+                    if  design_grid[i][j]==2:
+                        copyfile[mat_lines[4]] = '      OEFF                   = %g m3/m3\n' % OEFF[2]
+                        copyfile[mat_lines[4]-1] = '      OPOR                   = %g m3/m3\n' % OEFF[2]
+                    
+                    
+                    
         if i=='grid':
             for n in range(len(dis_lines)) :           
                 copyfile[dis_lines[n]] = dis_content[int(design_grid[i][j])][n]
